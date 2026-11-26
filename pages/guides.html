@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<!-- ═══════════════════════════════════════════════
+   guias.html — Anime Warriors III
+   Página de guias e construtor de equipa. Team builder ligado à BD — guarda equipa via auth.php.
+   ═══════════════════════════════════════════════ -->
+
+<html lang="en">
+
+<head>
+<meta charset="UTF-8" />
+  <base href="../">
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Guides · Anime Warriors III</title>
+<link rel="stylesheet" href="assets/css/shared.css?v=sticky-footer-3" />
+  <style>
+    :root {
+      --border: var(--line);
+    }
+
+    .page-hero {
+      padding: 48px 28px 36px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #070718, #020c1a);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .page-hero::before {
+      content: '📖';
+      position: absolute;
+      font-size: 280px;
+      opacity: .03;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .page-hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(36px, 6vw, 64px);
+      letter-spacing: 3px;
+    }
+
+    .page-hero h1 span {
+      color: var(--green);
+    }
+
+    /* GUIDE CARDS */
+    .guide-hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    @media(max-width:600px) {
+      .guide-hero-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .guide-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: all .3s;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      cursor: pointer;
+    }
+
+    .guide-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, .4);
+    }
+
+    .gc-banner {
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 56px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .gc-banner::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 50px;
+      background: linear-gradient(transparent, var(--card));
+    }
+
+    .gc-body {
+      padding: 14px 16px;
+    }
+
+    .gc-tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .gc-title {
+      font-family: var(--font-display);
+      font-size: 20px;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .gc-desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    .gc-meta {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* GUIDE CONTENT SECTIONS */
+    .guide-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .guide-sec-head {
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(90deg, var(--bg3), transparent);
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+      transition: background .2s;
+    }
+
+    .guide-sec-head:hover {
+      background: linear-gradient(90deg, var(--bg2), transparent);
+    }
+
+    .guide-sec-head h3 {
+      font-family: var(--font-display);
+      font-size: 18px;
+      letter-spacing: 1px;
+      flex: 1;
+    }
+
+    .guide-sec-head .toggle {
+      font-size: 16px;
+      transition: transform .3s;
+      color: var(--muted);
+    }
+
+    .guide-sec-head.open .toggle {
+      transform: rotate(180deg);
+    }
+
+    .guide-sec-body {
+      padding: 20px;
+      display: none;
+    }
+
+    .guide-sec-body.open {
+      display: block;
+      animation: fadeUp .3s ease;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    /* STEPS */
+    .guide-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .step {
+      display: flex;
+      gap: 14px;
+      padding: 14px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      transition: all .2s;
+    }
+
+    .step:hover {
+      border-color: var(--blue);
+      background: rgba(0, 220, 255, .04);
+    }
+
+    .step-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      color: #000;
+    }
+
+    .step-body h4 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+
+    .step-body p {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* TEAM BUILDER */
+    .team-builder {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .tb-title {
+      font-family: var(--font-display);
+      font-size: 22px;
+      letter-spacing: 1px;
+      color: var(--green);
+      margin-bottom: 16px;
+    }
+
+    .team-slots {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .team-slot {
+      width: 80px;
+      height: 90px;
+      background: var(--bg3);
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font-size: 28px;
+      cursor: pointer;
+      transition: all .3s;
+      position: relative;
+    }
+
+    .team-slot.filled {
+      border-style: solid;
+    }
+
+    .team-slot:hover {
+      border-color: var(--blue);
+      background: rgba(0, 220, 255, .05);
+    }
+
+    .team-slot .slot-name {
+      font-size: 9px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.2;
+      padding: 0 4px;
+    }
+
+    .team-slot .slot-clear {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 18px;
+      height: 18px;
+      background: var(--orange);
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      cursor: pointer;
+      font-style: normal;
+    }
+
+    .team-slot.filled .slot-clear {
+      display: flex;
+    }
+
+    .tb-picker {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+      gap: 8px;
+      max-height: 200px;
+      overflow-y: auto;
+      padding: 4px;
+    }
+
+    .pick-unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 4px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .pick-unit:hover {
+      border-color: var(--blue);
+      transform: scale(1.05);
+    }
+
+    .pick-unit .pu-icon {
+      font-size: 24px;
+    }
+
+    .pick-unit .pu-name {
+      font-size: 9px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .tb-score {
+      margin-top: 14px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .tbs-item {
+      text-align: center;
+    }
+
+    .tbs-val {
+      font-family: var(--font-mono);
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .tbs-lbl {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* TIPS */
+    .tips-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    @media(max-width:500px) {
+      .tips-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .tip-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .tip-card .ti {
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .tip-card .td h5 {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+
+    .tip-card .td p {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+  
+.coming-soon-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  background: rgba(4, 11, 20, 0.72);
+  backdrop-filter: blur(22px) saturate(0.6);
+  -webkit-backdrop-filter: blur(22px) saturate(0.6);
+  pointer-events: all;
+}
+.coming-soon-label {
+  font-family: var(--font-display);
+  font-size: clamp(42px, 8vw, 96px);
+  font-weight: 700;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 0 60px rgba(100, 180, 255, .5), 0 4px 24px rgba(0,0,0,.6);
+}
+.coming-soon-sub {
+  color: var(--muted);
+  font-size: 16px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+</style>
+</head>
+
+<body class="footer-page-shell">
+<div class="coming-soon-overlay" aria-label="Coming Soon">
+  <div class="coming-soon-label">Coming Soon</div>
+  <div class="coming-soon-sub">Guides are being prepared</div>
+</div>
+
+<header class="topnav">
+    <a href="pages/home.html" class="logo"><img src="assets/img/fighters-logo.png" alt="Anime Warriors III" style="height:48px;width:auto;filter:drop-shadow(0 0 8px rgba(185,16,28,0.4));"><span class="logo-text" style="display:none">ANIME WARRIORS</span></a>
+    <nav>
+      <a href="pages/home.html">Home</a>
+      <a href="pages/units.html">Units</a>
+      <a href="pages/gamemodes.html">Gamemodes</a>
+      <a href="pages/items.html">Items</a>
+      <a href="pages/guides.html">Guides</a>
+    </nav>
+  </header>
+
+  <div class="page-hero">
+    <div class="banner-map-bg" aria-hidden="true"></div>
+    <div class="banner-map-frame" aria-hidden="true"></div>
+    <h1>GUIDES &amp; <span>•TIPS</span></h1>
+    <p>Tudo que precisas para dominar o Anime Warriors III · Iniciante ao Avançado</p>
+  </div>
+
+  <div class="page-content">
+    <main>
+
+      <!-- GUIDE CARDS -->
+      <div class="sec-head reveal">
+        <h2>• Guides em Destaque</h2>
+        <div class="line"></div>
+      </div>
+      <div class="guide-hero-grid reveal">
+        <div class="guide-card" onclick="document.getElementById('sec-beginner').scrollIntoView({behavior:'smooth'})">
+          <div class="gc-banner" style="background:linear-gradient(135deg,#0a1a3a,#142080)">🌟</div>
+          <div class="gc-body">
+            <div class="gc-tag" style="color:var(--blue)">Iniciante</div>
+            <div class="gc-title">Guide do Iniciante Completo</div>
+            <div class="gc-desc">From zero to level 30. Learn the fundamentals, how to spend resources, and which first
+              units a focar.</div>
+            <div class="gc-meta"><span>15 min de leitura</span><span>·</span><span>⭐ 4.1/5</span></div>
+          </div>
+        </div>
+        <div class="guide-card" onclick="document.getElementById('sec-team').scrollIntoView({behavior:'smooth'})">
+          <div class="gc-banner" style="background:linear-gradient(135deg,#1a0a2e,#2d1a5a)">🏆</div>
+          <div class="gc-body">
+            <div class="gc-tag" style="color:var(--purple)">Avançado</div>
+            <div class="gc-title">Builder de Team Meta</div>
+            <div class="gc-desc">Interactive tool to build the best team. Analyze synergy, DPS, and score
+              geral.</div>
+            <div class="gc-meta"><span>Ferramenta</span><span>·</span><span>⭐ 5.0/5</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TEAM BUILDER -->
+      <div id="sec-team" style="scroll-margin-top:80px">
+        <div class="sec-head reveal">
+          <h2>• Build Your Team</h2>
+          <div class="line"></div>
+        </div>
+        <div class="team-builder reveal">
+          <div class="tb-title">Team Current</div>
+          <div class="team-slots" id="teamSlots">
+            <div class="team-slot" data-slot="0" onclick="openSlot(0)"><span>➕</span><span class="slot-name">Slot
+                1</span></div>
+            <div class="team-slot" data-slot="1" onclick="openSlot(1)"><span>➕</span><span class="slot-name">Slot
+                2</span></div>
+            <div class="team-slot" data-slot="2" onclick="openSlot(2)"><span>➕</span><span class="slot-name">Slot
+                3</span></div>
+            <div class="team-slot" data-slot="3" onclick="openSlot(3)"><span>➕</span><span class="slot-name">Slot
+                4</span></div>
+            <div class="team-slot" data-slot="4" onclick="openSlot(4)"><span>➕</span><span class="slot-name">Slot
+                5</span></div>
+          </div>
+          <div
+            style="font-family:var(--font-mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px">
+            Escolher Unit</div>
+          <div class="tb-picker" id="tbPicker"></div>
+          <div class="tb-score" id="tbScore">
+            <div class="tbs-item">
+              <div class="tbs-val" id="tbs-atk" style="color:var(--orange)">0</div>
+              <div class="tbs-lbl">ATK Total</div>
+            </div>
+            <div class="tbs-item">
+              <div class="tbs-val" id="tbs-spd" style="color:var(--blue)">0.0x</div>
+              <div class="tbs-lbl">SPD Média</div>
+            </div>
+            <div class="tbs-item">
+              <div class="tbs-val" id="tbs-score" style="color:var(--gold)">-</div>
+              <div class="tbs-lbl">Score Team</div>
+            </div>
+            <div class="tbs-item">
+              <div class="tbs-val" id="tbs-tier" style="color:var(--green)">-</div>
+              <div class="tbs-lbl">Tier</div>
+            </div>
+          </div>
+          <button id="tbSaveBtn" onclick="saveTeamLocally()"
+                  style="margin-top:16px;width:100%;padding:10px;
+                         background:linear-gradient(135deg,var(--blue),var(--purple));
+                         border:none;border-radius:10px;color:#000;
+                         font-family:var(--font-body);font-size:13px;
+                         font-weight:800;letter-spacing:1px;cursor:pointer;
+                         transition:all .2s">
+            💾 Save Team
+          </button>
+        </div>
+      </div>
+
+      <!-- BEGINNER GUIDE -->
+      <div id="sec-beginner" style="scroll-margin-top:80px">
+        <div class="sec-head reveal">
+          <h2>🌟 Guide do Iniciante</h2>
+          <div class="line"></div>
+        </div>
+      </div>
+
+      <div class="guide-section reveal">
+        <div class="guide-sec-head open" onclick="toggleSection(this)">
+          <span style="font-size:20px">1️⃣</span>
+          <h3>Primeiros Passos</h3>
+          <span class="toggle">▼</span>
+        </div>
+        <div class="guide-sec-body open">
+          <div class="guide-steps">
+            <div class="step">
+              <div class="step-num">1</div>
+              <div class="step-body">
+                <h4>Completa o Tutorial</h4>
+                <p>The tutorial gives valuable starter resources including gems and tickets. Do not skip it!</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">2</div>
+              <div class="step-body">
+                <h4>Faz o Reroll Inicial</h4>
+                <p>Use the starter tickets to try to get at least one Legendary or higher unit. If you do not
+                  get one, recreate the account. It takes less than 5 minutes.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">3</div>
+              <div class="step-body">
+                <h4>Completa Story Chapter 1 e 2</h4>
+                <p>These chapters are the easiest and give enough resources for your first upgrade
+                  significativo.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">4</div>
+              <div class="step-body">
+                <h4>Junta-te ao nosso Servidor do Discord</h4>
+                <p>The community is essential for finding raid groups, getting tips, and tracking the current meta.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="guide-section reveal">
+        <div class="guide-sec-head" onclick="toggleSection(this)">
+          <span style="font-size:20px">💎</span>
+          <h3>How to Spend Resources</h3>
+          <span class="toggle">▼</span>
+        </div>
+        <div class="guide-sec-body">
+          <div class="tips-grid">
+            <div class="tip-card">
+              <div class="ti">💎</div>
+              <div class="td">
+                <h5>Gems</h5>
+                <p>Guarda para invocações durante eventos com taxa de pull de lendárias aumentada. Nunca gastes em
+                  speed-ups.</p>
+              </div>
+            </div>
+            <div class="tip-card">
+              <div class="ti">🎫</div>
+              <div class="td">
+                <h5>Golden Tickets</h5>
+                <p>Only use them to summon units that are currently meta. Always check the current tier list.</p>
+              </div>
+            </div>
+            <div class="tip-card">
+              <div class="ti">⭐</div>
+              <div class="td">
+                <h5>EXP</h5>
+                <p>Always prioritize your main unit. One strong high-level unit beats several units
+                  médias.</p>
+              </div>
+            </div>
+            <div class="tip-card">
+              <div class="ti">🏅</div>
+              <div class="td">
+                <h5>Raid medals</h5>
+                <p>Gasta na loja de Raid. Prioriza a Soul lendária antes dos Gears — o impacto é muito maior.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="guide-section reveal">
+        <div class="guide-sec-head" onclick="toggleSection(this)">
+          <span style="font-size:20px">🏆</span>
+          <h3>Advanced Meta Tips</h3>
+          <span class="toggle">▼</span>
+        </div>
+        <div class="guide-sec-body">
+          <div class="tips-grid">
+            <div class="tip-card">
+              <div class="ti">⚡</div>
+              <div class="td">
+                <h5>Speed Farming</h5>
+                <p>Use Killua Storm + Lightning Soul in infinite mode for fast farming on waves 1-50.</p>
+              </div>
+            </div>
+            <div class="tip-card">
+              <div class="ti">🎯</div>
+              <div class="td">
+                <h5>Boss Killer</h5>
+                <p>Ichigo Bankai Z with Chaos Sword and Assassin Trait is the best setup for single bosses.</p>
+              </div>
+            </div>
+            <div class="tip-card">
+              <div class="ti">🛡️</div>
+              <div class="td">
+                <h5>Tank in Front</h5>
+                <p>Always place a tank (Erza Titan or similar) in slot 1 to absorb early boss damage.</p>
+              </div>
+            </div>
+            <div class="tip-card">
+              <div class="ti">🌊</div>
+              <div class="td">
+                <h5>AoE for Waves</h5>
+                <p>Goku Omni or Poseidon Zero are essential for clearing fast waves in infinite mode.</p>
+              </div>
+            </div>
+            <div class="tip-card">
+              <div class="ti">💜</div>
+              <div class="td">
+                <h5>Support is Meta</h5>
+                <p>A good support unit like Shadow Monk can double the whole team DPS with debuffs.</p>
+              </div>
+            </div>
+            <div class="tip-card">
+              <div class="ti">📅</div>
+              <div class="td">
+                <h5>Daily Routine</h5>
+                <p>Daily quests + 3 PvP + 1 weekly raid is the minimum routine to keep resources healthy.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+    <aside class="sidebar">
+      <div class="side-block reveal">
+        <div class="side-block-head"><span class="led led-g"></span> CURRENT META TEAM</div>
+        <div style="padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+          <div
+            style="font-size:11px;color:var(--muted);font-family:var(--font-mono);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">
+            Recommended Setup v6.1</div>
+          <div
+            style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--bg3);border-radius:8px;border:1px solid var(--border)">
+            <span style="font-size:22px">⚡</span>
+            <div>
+              <div style="font-size:13px;font-weight:700">Goku Omni</div>
+              <div style="font-size:10px;color:var(--muted)">Main DPS</div>
+            </div>
+            <span class="rarity-badge rb-myth" style="margin-left:auto">S</span>
+          </div>
+          <div
+            style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--bg3);border-radius:8px;border:1px solid var(--border)">
+            <span style="font-size:22px">🌙</span>
+            <div>
+              <div style="font-size:13px;font-weight:700">Luna Eclipse</div>
+              <div style="font-size:10px;color:var(--muted)">Support/Buff</div>
+            </div>
+            <span class="rarity-badge rb-myth" style="margin-left:auto">S</span>
+          </div>
+          <div
+            style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--bg3);border-radius:8px;border:1px solid var(--border)">
+            <span style="font-size:22px">🗡️</span>
+            <div>
+              <div style="font-size:13px;font-weight:700">Ichigo Bankai Z</div>
+              <div style="font-size:10px;color:var(--muted)">Boss Killer</div>
+            </div>
+            <span class="rarity-badge rb-legend" style="margin-left:auto">S</span>
+          </div>
+          <div
+            style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--bg3);border-radius:8px;border:1px solid var(--border)">
+            <span style="font-size:22px">🛡️</span>
+            <div>
+              <div style="font-size:13px;font-weight:700">Erza Titan</div>
+              <div style="font-size:10px;color:var(--muted)">Tank</div>
+            </div>
+            <span class="rarity-badge rb-epic" style="margin-left:auto">B</span>
+          </div>
+          <div
+            style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--bg3);border-radius:8px;border:1px solid var(--border)">
+            <span style="font-size:22px">👤</span>
+            <div>
+              <div style="font-size:13px;font-weight:700">Shadow Monk</div>
+              <div style="font-size:10px;color:var(--muted)">Debuffer</div>
+            </div>
+            <span class="rarity-badge rb-epic" style="margin-left:auto">C</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="side-block reveal" style="transition-delay:.1s">
+        <div class="side-block-head"><span class="led led-p"></span> GUIAS POPULARES</div>
+        <div style="padding:10px 12px;display:flex;flex-direction:column;gap:6px">
+          <a href="pages/guides.html#sec-beginner"
+            style="text-decoration:none;padding:8px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;display:block;transition:all .2s"
+            onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="font-size:13px;font-weight:700;color:var(--text)">🚀 Guide de Reroll</div>
+            <div style="font-size:11px;color:var(--muted)">Como fazer reroll eficiente</div>
+          </a>
+          <a href="pages/items.html"
+            style="text-decoration:none;padding:8px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;display:block;transition:all .2s"
+            onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="font-size:13px;font-weight:700;color:var(--text)">💰 Farming de Gems</div>
+            <div style="font-size:11px;color:var(--muted)">Máximo de gemas por dia</div>
+          </a>
+          <a href="pages/gamemodes.html"
+            style="text-decoration:none;padding:8px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;display:block;transition:all .2s"
+            onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="font-size:13px;font-weight:700;color:var(--text)">👾 Raid Guide</div>
+            <div style="font-size:11px;color:var(--muted)">Estratégias para cada boss</div>
+          </a>
+          <a href="pages/profile.html"
+            style="text-decoration:none;padding:8px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;display:block;transition:all .2s"
+            onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="font-size:13px;font-weight:700;color:var(--text)">⚔️ Guide PvP</div>
+            <div style="font-size:11px;color:var(--muted)">Chegar a Mestre no PvP</div>
+          </a>
+        </div>
+      </div>
+
+      <div class="side-block reveal" style="transition-delay:.2s">
+        <div class="side-block-head"><span class="led led-c"></span> CONTRIBUTE</div>
+        <div style="padding:14px 16px">
+          <p style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:12px">Sabes algo que falta na wiki?
+            The community needs yor! Any player can contribute.</p>
+          <a href="admin/index.php" class="btn btn-outline btn-sm" data-admin-only hidden>📝 Edit Page</a>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="pages/home.html" aria-label="Anime Rush home"><img src="assets/img/fighters-logo.png" alt="Anime Rush" class="logo-img"></a>
+      <p>Community wiki for Anime Rush, maintained by players.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Wiki</h4>
+      <ul>
+        <li><a href="pages/home.html">Home</a></li>
+        <li><a href="pages/units.html">Units</a></li>
+        <li><a href="pages/items.html">Items</a></li>
+        <li><a href="pages/guides.html">Guides</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Content</h4>
+      <ul>
+        <li><a href="pages/gamemodes.html">Gamemodes</a></li>
+        <li><a href="admin/index.php" data-admin-only hidden>Admin panel</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Community</h4>
+      <ul><li><a href="https://discord.gg/HB2Kq8RtU3" target="_blank" rel="noopener noreferrer">Discord / Contact</a></li></ul>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="pages/privacy-policy.html">Privacy Policy</a></li>
+        <li><a href="pages/terms-of-service.html">Terms of Service</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Anime Rush</span>
+    <span>Community maintained</span>
+  </div>
+</footer>
+
+  <script src="assets/js/shared.js?v=fd5"></script>
+  <script>
+    // Accordion
+    function toggleSection(head) {
+      head.classList.toggle('open');
+      const body = head.nextElementSibling;
+      body.classList.toggle('open');
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // Team Builder — carrega units da BD e guarda na BD
+    // ═══════════════════════════════════════════════════════
+
+    let UNITS_TB = [];
+    const team   = [null, null, null, null, null];
+    let activeSlot = -1;
+    let _tbSaving  = false;
+
+    function tbSafe(value) {
+      return typeof escapeHtml === 'function' ? escapeHtml(value) : String(value ?? '');
+    }
+
+    function tbSafeUrl(value) {
+      return tbSafe(typeof safeAssetUrl === 'function' ? safeAssetUrl(value) : value);
+    }
+
+    function tbSafeBg(value, fallback = 'var(--bg3)') {
+      return typeof safeCssBackground === 'function'
+        ? safeCssBackground(value, fallback)
+        : String(value || fallback).replace(/[<>"'`;{}]/g, '') || fallback;
+    }
+
+    function guideUnitImage(unit) {
+      return unit?.img_minimal || unit?.img_card || unit?.img || unit?.img_ingame || '';
+    }
+
+    /* Load units da BD e equipa guardada neste navegador */
+    async function initTeamBuilder() {
+      try {
+        const res = await fetch('api/units.php?action=list');
+        UNITS_TB = await res.json();
+        if (!Array.isArray(UNITS_TB)) UNITS_TB = [];
+      } catch(e) { UNITS_TB = []; }
+
+      buildPicker();
+
+      // Load equipa local sem depender de uma tabela no servidor.
+      const savedTeam = loadTeamLocal();
+      savedTeam.forEach((savedUnit, slot) => {
+        if (!savedUnit) return;
+        team[slot] = UNITS_TB.find(unit => Number(unit.id) === Number(savedUnit.id)) || savedUnit;
+      });
+      updateTeamDisplay();
+    }
+
+    /* Construir o picker com todas as units da BD */
+    function buildPicker() {
+      const p = document.getElementById('tbPicker');
+      p.innerHTML = '';
+      if (!UNITS_TB.length) {
+        p.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:12px">No units in the database.</div>';
+        return;
+      }
+      const frag = document.createDocumentFragment();
+      UNITS_TB.forEach(u => {
+        const el = document.createElement('div');
+        el.className = 'pick-unit';
+        el.dataset.tip = u.name;
+        const preview = guideUnitImage(u);
+        const icon = preview
+          ? `<img src="${tbSafeUrl(preview)}" alt="${tbSafe(u.name || '')}" style="width:85%;height:85%;object-fit:contain" loading="lazy">`
+          : tbSafe(u.emoji || '⚡');
+        el.innerHTML = `<div style="width:40px;height:40px;border-radius:8px;background:${tbSafeBg(u.bg)};display:flex;align-items:center;justify-content:center;font-size:22px">${icon}</div><div class="pu-name">${tbSafe(u.name)}</div>`;
+        el.addEventListener('click', () => addToTeam(u));
+        frag.appendChild(el);
+      });
+      p.appendChild(frag);
+    }
+
+    function openSlot(i) {
+      activeSlot = i;
+      document.querySelectorAll('.team-slot').forEach((s, j) =>
+        s.style.outline = j === i ? '2px solid var(--blue)' : 'none');
+    }
+
+    function addToTeam(u) {
+      if (activeSlot < 0) {
+        const empty = team.findIndex(t => !t);
+        if (empty < 0) return;
+        activeSlot = empty;
+      }
+      team[activeSlot] = u;
+      updateTeamDisplay();
+      const next = team.findIndex(t => !t);
+      activeSlot = next >= 0 ? next : -1;
+      document.querySelectorAll('.team-slot').forEach((s, j) =>
+        s.style.outline = j === activeSlot ? '2px solid var(--blue)' : 'none');
+    }
+
+    function removeFromTeam(i, event) {
+      team[i] = null;
+      updateTeamDisplay();
+      if (event) event.stopPropagation();
+    }
+
+    function updateTeamDisplay() {
+      document.querySelectorAll('.team-slot').forEach((slot, i) => {
+        const u = team[i];
+        if (u) {
+          const preview = guideUnitImage(u);
+          const icon = preview
+            ? `<img src="${tbSafeUrl(preview)}" alt="${tbSafe(u.name || '')}" style="width:80%;height:80%;object-fit:contain" loading="lazy">`
+            : tbSafe(u.emoji || '⚡');
+          slot.classList.add('filled');
+          slot.innerHTML = `
+            <div style="width:48px;height:48px;border-radius:10px;background:${tbSafeBg(u.bg)};display:flex;align-items:center;justify-content:center;font-size:26px">${icon}</div>
+            <span class="slot-name">${tbSafe(u.name)}</span>
+            <i class="slot-clear" onclick="removeFromTeam(${i}, event)">✕</i>`;
+          slot.style.borderColor = 'var(--blue)';
+          slot.style.borderStyle = 'solid';
+        } else {
+          slot.classList.remove('filled');
+          slot.innerHTML = `<span>➕</span><span class="slot-name">Slot ${i + 1}</span>`;
+          slot.style.borderColor = '';
+          slot.style.borderStyle = '';
+        }
+        slot.onclick = () => openSlot(i);
+      });
+
+      // Stats da equipa
+      const filled   = team.filter(Boolean);
+      const totalAtk = filled.reduce((s, u) => s + parseInt(u.atk), 0);
+      const avgSpd   = filled.length ? filled.reduce((s, u) => s + parseFloat(u.spd), 0) / filled.length : 0;
+      const score    = filled.length ? Math.rornd((totalAtk * avgSpd) / 1000) : 0;
+      const tierStr  = score > 120 ? 'S' : score > 80 ? 'A' : score > 50 ? 'B' : score > 20 ? 'C' : filled.length ? 'D' : '-';
+      document.getElementById('tbs-atk'  ).textContent = totalAtk.toLocaleString('en-US');
+      document.getElementById('tbs-spd'  ).textContent = avgSpd.toFixed(1) + 's';
+      document.getElementById('tbs-score').textContent = score;
+      document.getElementById('tbs-tier' ).textContent = tierStr;
+    }
+
+    /* Save equipa localmente via shared.js */
+    async function saveTeamLocally() {
+      if (_tbSaving) return;
+      _tbSaving = true;
+
+      const saveBtn = document.getElementById('tbSaveBtn');
+      if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving…'; }
+
+      const payload = team.map((u, i) => u ? { id: u.id, name: u.name, emoji: u.emoji || 'FS', img: guideUnitImage(u) || '', bg: u.bg || '', rarity: u.rarity || '' } : null);
+      const result  = await saveTeam(payload);
+
+      if (saveBtn) {
+        saveBtn.disabled  = false;
+        saveBtn.textContent = result.success ? '✅ Saved!' : '❌ Error';
+        setTimeout(() => { if (saveBtn) saveBtn.textContent = '💾 Save Team'; }, 2000);
+      }
+      _tbSaving = false;
+    }
+
+    initTeamBuilder();
+  </script>
+</body>
+
+</html>
+

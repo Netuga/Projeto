@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<!-- ═══════════════════════════════════════════════
+   perfil.html — Anime Warriors III
+   User profile page. Shows stats, team, favorites, PvP rank, and edit controls.
+   ═══════════════════════════════════════════════ -->
+
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+  <base href="../"><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Profile · Anime Warriors III</title>
+<link rel="stylesheet" href="assets/css/shared.css?v=sticky-footer-3"/>
+<style>
+/* ═══════════════════════════════════════════════════════════
+   perfil.html — Estilos exclusivos desta página
+   ═══════════════════════════════════════════════════════════ */
+
+/* ─── BANNER DO PERFIL ──────────────────────────────────────
+   Faixa de topo com gradiente e avatar grande */
+.profile-banner {
+  position: relative;
+  height: 200px;
+  background:
+    radial-gradient(ellipse 80% 100% at 30% 50%, rgba(170,68,255,.2) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80% 20%, rgba(196,24,37,.15) 0%, transparent 60%),
+    linear-gradient(135deg, #020c1a 0%, #020c1a 100%);
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+/* Grid animado no banner */
+.profile-banner::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(196,24,37,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(196,24,37,.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: gridShift 20s linear infinite;
+}
+@keyframes gridShift { to { background-position: 40px 40px; } }
+
+/* Área inferior do banner — avatar + nome */
+.profile-info-bar {
+  max-width: 1240px; margin: 0 auto;
+  padding: 0 28px;
+  position: relative;
+  display: flex; align-items: flex-end; gap: 20px;
+  /* O avatar sai 40px para baixo do banner */
+  transform: translateY(40px);
+}
+
+/* ─── AVATAR ────────────────────────────────────────────────*/
+.profile-avatar-wrap { position: relative; flex-shrink: 0; }
+.profile-avatar {
+  width: 96px; height: 96px; border-radius: 20px;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 48px;
+  border: 3px solid var(--bg);
+  box-shadow: 0 0 30px rgba(196,24,37,.3);
+  cursor: pointer; /* clicável para mudar avatar */
+  transition: box-shadow .2s;
+  position: relative;
+}
+.profile-avatar:hover { box-shadow: 0 0 40px rgba(196,24,37,.5); }
+/* Ícone de editar que aparece ao hover */
+.avatar-edit-hint {
+  position: absolute; inset: 0; border-radius: 18px;
+  background: rgba(0,0,0,.5);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; opacity: 0; transition: opacity .2s;
+}
+.profile-avatar:hover .avatar-edit-hint { opacity: 1; }
+
+/* Name e badge de rank */
+.profile-name-wrap { padding-bottom: 6px; }
+.profile-username {
+  font-family: var(--font-display); font-size: 28px; letter-spacing: 2px;
+  color: var(--text); line-height: 1;
+}
+.profile-since {
+  font-size: 11px; color: var(--muted);
+  font-family: var(--font-mono); letter-spacing: 1px; margin-top: 4px;
+}
+/* Botão de editar (canto direito) */
+.profile-edit-btn {
+  margin-left: auto; padding-bottom: 6px;
+}
+
+/* ─── CONTEÚDO (com espaço para o avatar que sai do banner) ─*/
+.profile-page {
+  max-width: 1240px; margin: 0 auto;
+  padding: 64px 28px 40px; /* 64px = 40px offset do avatar + espaço */
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 28px;
+  min-width: 0;
+}
+.profile-page > main { min-width: 0; }
+@media(max-width:860px){ .profile-page { grid-template-columns: 1fr; } }
+
+/* ─── CARDS DE STATS ────────────────────────────────────────*/
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap: 12px; margin-bottom: 24px;
+}
+@media(max-width:600px){ .stats-row { grid-template-columns: 1fr 1fr; } }
+
+.stat-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px;
+  text-align: center; transition: all .3s;
+}
+.stat-card:hover { border-color: var(--blue); transform: translateY(-3px); box-shadow: var(--glow-c); }
+.stat-val {
+  font-family: var(--font-mono); font-size: 22px; font-weight: 700;
+  display: block; margin-bottom: 4px;
+}
+.stat-lbl { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
+
+/* ─── EQUIPA ────────────────────────────────────────────────*/
+.team-grid {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  margin-top: 12px;
+}
+.team-slot-card {
+  background: var(--bg3); border: 2px dashed var(--border);
+  border-radius: 14px; width: 100px; height: 120px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 6px;
+  cursor: pointer; transition: all .2s; position: relative;
+}
+.team-slot-card.filled {
+  border-style: solid; border-color: var(--border2);
+  background: var(--card);
+}
+.team-slot-card:hover { border-color: var(--blue); background: rgba(196,24,37,.05); }
+.team-slot-icon {
+  width: 56px; height: 56px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px;
+  overflow: hidden;
+}
+.team-slot-name { font-size: 10px; color: var(--muted); text-align: center; line-height: 1.3; padding: 0 4px; }
+.team-slot-num {
+  font-family: var(--font-mono); font-size: 9px; color: var(--dim);
+  position: absolute; top: 6px; left: 8px;
+}
+/* Badge de raridade sobre o slot */
+.team-slot-rar {
+  position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
+  font-size: 8px; font-family: var(--font-mono); padding: 1px 6px;
+  border-radius: 10px; font-weight: 700; white-space: nowrap;
+}
+
+/* ─── SECÇÃO DE EDIÇÃO ──────────────────────────────────────*/
+.edit-section {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+  margin-bottom: 20px;
+}
+.edit-section-head {
+  padding: 14px 18px;
+  background: linear-gradient(90deg, var(--bg3), transparent);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-display); font-size: 18px; letter-spacing: 1px;
+  display: flex; align-items: center; gap: 10px;
+}
+.edit-section-body { padding: 18px; }
+
+.form-row { margin-bottom: 14px; }
+.form-row label {
+  display: block; font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 6px;
+}
+.form-input {
+  width: 100%; background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 10px; color: var(--text);
+  font-family: var(--font-body); font-size: 14px;
+  padding: 10px 14px; outline: none; transition: border-color .2s, box-shadow .2s;
+}
+.form-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(196,24,37,.1); }
+.form-input[readonly] { opacity: .5; }
+
+/* Seletor de avatar emoji */
+.avatar-picker {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px;
+}
+.av-opt {
+  width: 44px; height: 44px; border-radius: 10px;
+  background: var(--bg3); border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; cursor: pointer; transition: all .15s;
+}
+.av-opt:hover { border-color: var(--blue); transform: scale(1.1); }
+.av-opt.selected { border-color: var(--blue); background: rgba(196,24,37,.1); box-shadow: var(--glow-c); }
+
+/* Mensagem de feedback inline */
+.inline-msg {
+  font-size: 12px; padding: 8px 12px; border-radius: 8px;
+  margin-top: 10px; display: none;
+}
+.inline-msg.ok    { background: rgba(0,255,157,.1); color: var(--green); border: 1px solid rgba(0,255,157,.3); display:block; }
+.inline-msg.error { background: rgba(185,16,28,.1); color: var(--orange);  border: 1px solid rgba(185,16,28,.3); display:block; }
+
+.social-link-card {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(178,13,25,.08), rgba(196,24,37,.03));
+}
+.social-link-main {
+  display: flex; align-items: center; gap: 14px;
+  min-width: 0;
+}
+.social-link-icon {
+  width: 48px; height: 48px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.social-link-icon.discord {
+  background: linear-gradient(135deg, #b20d19, #7f0812);
+  color: #fff;
+  box-shadow: 0 10px 30px rgba(178,13,25,.24);
+}
+.social-link-copy { min-width: 0; }
+.social-link-title {
+  font-family: var(--font-display); font-size: 15px; letter-spacing: 1px;
+}
+.social-link-sub {
+  margin-top: 4px; color: var(--muted);
+  font-size: 12px; line-height: 1.6;
+  word-break: break-word;
+}
+.social-link-actions {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  justify-content: flex-end;
+}
+@media(max-width:700px){
+  .social-link-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .social-link-actions {
+    justify-content: stretch;
+  }
+  .social-link-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ─── SIDEBAR DO PERFIL ─────────────────────────────────────*/
+/* Rank PvP */
+.rank-display {
+  padding: 20px; text-align: center;
+  background: linear-gradient(135deg, #1a0a2e, #2a1a4a);
+}
+.rank-icon { font-size: 56px; margin-bottom: 8px; display: block; }
+.rank-name {
+  font-family: var(--font-display); font-size: 24px; letter-spacing: 2px;
+  color: var(--purple); margin-bottom: 4px;
+}
+.rank-pts { font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+
+/* Barra de progresso para próximo rank */
+.rank-progress-wrap { padding: 0 20px 16px; }
+.rank-progress-lbl {
+  display: flex; justify-content: space-between;
+  font-size: 10px; color: var(--muted); font-family: var(--font-mono);
+  margin-bottom: 6px;
+}
+.rank-bar {
+  height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden;
+}
+.rank-bar-fill {
+  height: 100%; border-radius: 3px;
+  background: linear-gradient(90deg, var(--purple), var(--orange));
+  transition: width .6s ease;
+}
+
+/* Unit favorita */
+.fav-unit-display {
+  padding: 16px; display: flex; align-items: center; gap: 14px;
+}
+.fav-unit-icon {
+  width: 56px; height: 56px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px; flex-shrink: 0; border: 2px solid var(--border);
+}
+.fav-unit-info { flex: 1; }
+.fav-unit-name { font-family: var(--font-display); font-size: 16px; letter-spacing: .5px; }
+.fav-unit-role { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* Histórico de actividade */
+.activity-list { padding: 8px 12px; }
+.activity-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px; border-radius: 8px; transition: background .15s;
+  font-size: 12px;
+}
+.activity-item:hover { background: rgba(255,255,255,.03); }
+.activity-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.activity-text { flex: 1; color: var(--text); }
+.activity-time { font-family: var(--font-mono); font-size: 10px; color: var(--dim); }
+
+/* ─── MODAL DE CONFIRMAÇÃO (ex: mudar password) ─────────────*/
+.confirm-overlay {
+  position: fixed; inset: 0; z-index: 800;
+  background: rgba(0,0,0,.7); backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px; opacity: 0; pointer-events: none; transition: opacity .3s;
+}
+.confirm-overlay.open { opacity: 1; pointer-events: all; }
+.confirm-box {
+  background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: 16px; padding: 28px; max-width: 380px; width: 100%;
+  transform: scale(.95); transition: transform .3s;
+  box-shadow: 0 24px 80px rgba(0,0,0,.6);
+}
+.confirm-overlay.open .confirm-box { transform: scale(1); }
+.confirm-box h3 {
+  font-family: var(--font-display); font-size: 22px; letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.confirm-box p { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
+.confirm-actions { display: flex; gap: 10px; }
+.confirm-actions .btn { flex: 1; justify-content: center; }
+</style>
+</head>
+<body class="footer-page-shell">
+<!-- ── NAVBAR ─────────────────────────────────────────────── -->
+<header class="topnav">
+  <a href="pages/home.html" class="logo"><img src="assets/img/fighters-logo.png" alt="Anime Warriors III" style="height:48px;width:auto;filter:drop-shadow(0 0 8px rgba(185,16,28,0.4));"><span class="logo-text" style="display:none">ANIME WARRIORS</span></a>
+  <nav>
+    <a href="pages/home.html">Home</a>
+    <a href="pages/units.html">units</a>
+    <a href="pages/gamemodes.html">Modes</a>
+    <a href="pages/items.html">Items</a>
+    <a href="pages/guides.html">Guides</a>
+  </nav>
+  <!-- O user menu é injetado aqui pelo shared.js -->
+</header>
+
+<!-- ── BANNER COM AVATAR ───────────────────────────────────── -->
+<div class="profile-banner">
+  <div class="banner-map-bg" aria-hidden="true"></div>
+  <div class="banner-map-frame" aria-hidden="true"></div>
+  <div class="profile-info-bar">
+    <!-- Avatar clicável para mudar emoji -->
+    <div class="profile-avatar-wrap">
+      <div class="profile-avatar" id="profileAvatar" onclick="openAvatarPicker()" title="Clica para mudar o avatar">
+        <span id="avatarEmoji">👤</span>
+        <div class="avatar-edit-hint">✏️</div>
+      </div>
+    </div>
+    <!-- Name e data de registo -->
+    <div class="profile-name-wrap">
+      <div class="profile-username" id="profileUsername">Loading…</div>
+      <div class="profile-since" id="profileSince">Member since —</div>
+    </div>
+    <!-- Botão editar no canto direito -->
+    <div class="profile-edit-btn">
+      <button class="btn btn-outline btn-sm" onclick="scrollToEdit()">Edit Profile</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── CONTEÚDO PRINCIPAL ──────────────────────────────────── -->
+<div class="profile-page">
+<main>
+
+  <!-- STATS -->
+  <div class="sec-head reveal"><h2>• Stats</h2><div class="line"></div></div>
+  <div class="stats-row reveal">
+    <div class="stat-card">
+      <span class="stat-val" id="statVisits" style="color:var(--blue)">—</span>
+      <span class="stat-lbl">Visitas</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-val" id="statPvpPts" style="color:var(--orange)">—</span>
+      <span class="stat-lbl">Pontos PvP</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-val" id="statRank" style="color:var(--purple)">—</span>
+      <span class="stat-lbl">Rank</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-val" id="statFav" style="color:var(--gold);font-size:28px">—</span>
+      <span class="stat-lbl">Favorita</span>
+    </div>
+  </div>
+
+  <!-- EQUIPA -->
+  <div class="sec-head reveal"><h2>• A Minha Team</h2><div class="line"></div></div>
+  <div class="edit-section reveal">
+    <div class="edit-section-head">Team Current</div>
+    <div class="edit-section-body">
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px">
+        Team saved in this browser. Edit it in the <a href="pages/guides.html" style="color:var(--blue)">Team Builder</a>.
+      </p>
+      <div class="team-grid" id="profileTeamGrid">
+        <!-- Injetado por renderTeam() -->
+      </div>
+    </div>
+  </div>
+
+  <!-- EDITAR PERFIL -->
+  <div id="editSection" style="scroll-margin-top:80px">
+    <div class="sec-head reveal"><h2>• Edit Profile</h2><div class="line"></div></div>
+  </div>
+
+  <!-- Avatar -->
+  <div class="edit-section reveal" id="avatarSection">
+    <div class="edit-section-head">Escolher Avatar</div>
+    <div class="edit-section-body">
+      <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Choose an emoji for your avatar:</p>
+      <div class="avatar-picker" id="avatarPicker">
+        <!-- Gerado por JS -->
+      </div>
+      <div class="inline-msg" id="avatarMsg"></div>
+      <button class="btn btn-cyan btn-sm" style="margin-top:14px" onclick="saveAvatar()">Save Avatar</button>
+    </div>
+  </div>
+
+  <!-- Dados pessoais -->
+  <div class="edit-section reveal">
+    <div class="edit-section-head">Account Details</div>
+    <div class="edit-section-body">
+      <div class="form-row">
+        <label>Username</label>
+        <input type="text" class="form-input" id="editUsername" placeholder="Your username"/>
+      </div>
+      <div class="form-row">
+        <label>Email</label>
+        <input type="email" class="form-input" id="editEmail" placeholder="Your email"/>
+      </div>
+      <div class="inline-msg" id="profileMsg"></div>
+      <button class="btn btn-cyan btn-sm" style="margin-top:4px" onclick="saveProfile()">Save Alterações</button>
+    </div>
+  </div>
+
+  <div class="edit-section reveal">
+    <div class="edit-section-head">Ligações Sociais</div>
+    <div class="edit-section-body">
+      <div class="social-link-card">
+        <div class="social-link-main">
+          <div class="social-link-icon discord" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 127.14 96.36">
+              <path fill="currentColor" d="M107.7 8.07A105.15 105.15 0 0 0 81.47 0a72.06 72.06 0 0 0-3.36 6.83 97.68 97.68 0 0 0-29.11 0A72.37 72.37 0 0 0 45.64 0 105.89 105.89 0 0 0 19.39 8.09C2.79 32.65-1.71 56.6.54 80.21a105.73 105.73 0 0 0 32.17 16.15 77.7 77.7 0 0 0 6.89-11.14 68.42 68.42 0 0 1-10.85-5.18c.91-.69 1.8-1.42 2.66-2.18a75.57 75.57 0 0 0 65.27 0c.87.76 1.76 1.49 2.67 2.18a68.68 68.68 0 0 1-10.87 5.19 77 77 0 0 0 6.89 11.13A105.25 105.25 0 0 0 128 80.22c2.65-23.52-1.38-47.32-20.3-72.15ZM42.45 65.69c-6.27 0-11.43-5.73-11.43-12.78S36.06 40.12 42.45 40.12s11.55 5.8 11.43 12.79-5.04 12.78-11.43 12.78Zm42.24 0c-6.27 0-11.43-5.73-11.43-12.78S78.3 40.12 84.69 40.12s11.56 5.8 11.44 12.79-5.04 12.78-11.44 12.78Z"/>
+            </svg>
+          </div>
+          <div class="social-link-copy">
+            <div class="social-link-title">Discord</div>
+            <div class="social-link-sub" id="discordLinkText">Loading connection status…</div>
+          </div>
+        </div>
+        <div class="social-link-actions">
+          <button class="btn btn-cyan btn-sm" id="discordConnectBtn" onclick="connectDiscord()">Associar Discord</button>
+          <button class="btn btn-outline btn-sm" id="discordDisconnectBtn" onclick="disconnectDiscord()" style="display:none">Remove Connection</button>
+        </div>
+      </div>
+      <div class="inline-msg" id="discordMsg"></div>
+    </div>
+  </div>
+
+  <!-- Mudar password -->
+  <div class="edit-section reveal">
+    <div class="edit-section-head">Mudar Password</div>
+    <div class="edit-section-body">
+      <div id="pwSetupHint" style="display:none;margin-bottom:12px;padding:12px 14px;border-radius:12px;border:1px solid rgba(0,240,255,.22);background:rgba(0,240,255,.08);color:var(--text);font-size:12px;line-height:1.7">
+        Your account was created with social sign-in. Set a password now so you can also sign in manually.
+      </div>
+      <div class="form-row" id="pwOldRow">
+        <label>Password Current</label>
+        <input type="password" class="form-input" id="pwOld" placeholder="Password atual…"/>
+      </div>
+      <div class="form-row">
+        <label id="pwNewLabel">New Password</label>
+        <input type="password" class="form-input" id="pwNew" placeholder="New password (mín. 8 caracteres)…"/>
+      </div>
+      <div class="form-row">
+        <label>Confirmar New Password</label>
+        <input type="password" class="form-input" id="pwNew2" placeholder="Repete a nova password…"/>
+      </div>
+      <div class="inline-msg" id="pwMsg"></div>
+      <button class="btn btn-outline btn-sm" id="pwActionBtn" style="margin-top:4px" onclick="changePassword()">• Mudar Password</button>
+    </div>
+  </div>
+
+  <!-- Zona de perigo -->
+  <div class="edit-section reveal" style="border-color:rgba(185,16,28,.3)">
+    <div class="edit-section-head" style="color:var(--orange)">⚠️ Zona de Perigo</div>
+    <div class="edit-section-body">
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.7">
+        Sign out on all devices or permanently delete your account and all associated data.
+      </p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-outline btn-sm" onclick="logout()">Log out</button>
+        <button class="btn btn-sm" style="background:rgba(185,16,28,.15);color:var(--orange);border:1px solid rgba(185,16,28,.3)" onclick="openDeleteConfirm()">🗑️ Delete Account</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ── SIDEBAR ─────────────────────────────────────────────── -->
+<aside class="sidebar">
+
+  <!-- Rank PvP -->
+  <div class="side-block reveal">
+    <div class="side-block-head"><span class="led led-p"></span> RANK PVP</div>
+    <div class="rank-display">
+      <span class="rank-icon" id="rankIcon">🥉</span>
+      <div class="rank-name" id="rankName">Bronze</div>
+      <div class="rank-pts" id="rankPts">0 pontos</div>
+    </div>
+    <div class="rank-progress-wrap">
+      <div class="rank-progress-lbl">
+        <span id="rankCurrent">Bronze</span>
+        <span id="rankNext">Prata →</span>
+      </div>
+      <div class="rank-bar">
+        <div class="rank-bar-fill" id="rankFill" style="width:0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Unit favorita -->
+  <div class="side-block reveal" style="transition-delay:.1s">
+    <div class="side-block-head"><span class="led led-g"></span> UNIDADE FAVORITA</div>
+    <div class="fav-unit-display" id="favUnitDisplay">
+      <div class="fav-unit-icon" style="background:var(--bg3)">❓</div>
+      <div class="fav-unit-info">
+        <div class="fav-unit-name">Nonea</div>
+        <div class="fav-unit-role" style="font-size:11px;color:var(--muted)">Joga mais para desbloquear</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actividade recente -->
+  <div class="side-block reveal" style="transition-delay:.2s">
+    <div class="side-block-head"><span class="led led-c"></span> ACTIVIDADE</div>
+    <div class="activity-list" id="activityList">
+      <!-- Injetado por JS -->
+    </div>
+  </div>
+
+  <!-- Links rápidos -->
+  <div class="side-block reveal" style="transition-delay:.3s">
+    <div class="side-block-head"><span class="led led-g"></span> ATALHOS</div>
+    <div style="padding:8px 10px;display:flex;flex-direction:column;gap:4px">
+      <a href="pages/units.html" class="ud-item">⚔️ View units</a>
+      <a href="pages/guides.html"    class="ud-item">🔧 Builder de Team</a>
+      <a href="pages/gamemodes.html" class="ud-item">🎮 Game Modes</a>
+      <a href="pages/items.html"    class="ud-item">💎 Items</a>
+    </div>
+  </div>
+
+</aside>
+</div>
+
+<!-- ── MODAL CONFIRMAR APAGAR CONTA ────────────────────────── -->
+<div class="confirm-overlay" id="deleteOverlay" onclick="if(event.target===this)closeDeleteConfirm()">
+  <div class="confirm-box">
+    <h3 style="color:var(--orange)">⚠️ Delete Account</h3>
+    <p>This action is <strong style="color:var(--orange)">irreversible</strong>. All your data, team, and progress will be permanently deleted.</p>
+    <div class="form-row">
+      <label>Confirm your password to continue</label>
+      <input type="password" class="form-input" id="deletePassword" placeholder="Your password…"/>
+    </div>
+    <div class="inline-msg" id="deleteMsg"></div>
+    <div class="confirm-actions" style="margin-top:16px">
+      <button class="btn btn-outline" onclick="closeDeleteConfirm()">Cancel</button>
+      <button class="btn btn-pink"    onclick="deleteAccount()">🗑️ Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── FOOTER ──────────────────────────────────────────────── -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="pages/home.html" aria-label="Anime Rush home"><img src="assets/img/fighters-logo.png" alt="Anime Rush" class="logo-img"></a>
+      <p>Community wiki for Anime Rush, maintained by players.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Wiki</h4>
+      <ul>
+        <li><a href="pages/home.html">Home</a></li>
+        <li><a href="pages/units.html">Units</a></li>
+        <li><a href="pages/items.html">Items</a></li>
+        <li><a href="pages/guides.html">Guides</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Content</h4>
+      <ul>
+        <li><a href="pages/gamemodes.html">Gamemodes</a></li>
+        <li><a href="admin/index.php" data-admin-only hidden>Admin panel</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Community</h4>
+      <ul><li><a href="https://discord.gg/HB2Kq8RtU3" target="_blank" rel="noopener noreferrer">Discord / Contact</a></li></ul>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="pages/privacy-policy.html">Privacy Policy</a></li>
+        <li><a href="pages/terms-of-service.html">Terms of Service</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Anime Rush</span>
+    <span>Community maintained</span>
+  </div>
+</footer>
+
+<script src="assets/js/shared.js?v=fd5"></script>
+<script>
+/* ═══════════════════════════════════════════════════════════
+   perfil.html — Script principal
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── DADOS DE units — carregados da BD ────────────────── */
+// Array preenchido via api/units.php ao iniciar a página
+let UNITS_DATA = [];
+const UNIT_MAP_PERFIL = {};
+
+function pfSafe(value) {
+  return typeof escapeHtml === 'function' ? escapeHtml(value) : String(value ?? '');
+}
+
+function pfSafeUrl(value) {
+  return pfSafe(typeof safeAssetUrl === 'function' ? safeAssetUrl(value) : value);
+}
+
+function pfSafeBg(value, fallback = 'var(--bg3)') {
+  return typeof safeCssBackground === 'function'
+    ? safeCssBackground(value, fallback)
+    : String(value || fallback).replace(/[<>"'`;{}]/g, '') || fallback;
+}
+
+function pfRarity(value) {
+  const raw = String(value || '').toLowerCase();
+  return ['secreto', 'myth', 'legend', 'epic', 'rare', 'common'].includes(raw) ? raw : 'rare';
+}
+
+async function loadUnitsData() {
+  try {
+    const res = await fetch('api/units.php?action=list');
+    UNITS_DATA = await res.json();
+    if (!Array.isArray(UNITS_DATA)) UNITS_DATA = [];
+    UNITS_DATA.forEach(u => { UNIT_MAP_PERFIL[u.id] = u; });
+  } catch(e) { UNITS_DATA = []; }
+}
+
+/* Emojis disponíveis para avatar */
+const AVATAR_OPTIONS = ['👤','⚡','🌙','🗡️','🦊','🔱','🌪️','🛡️','🤖','🏹','💧','🪨','👑','🔥','💎','🌟','⚔️','🎮','🏆','🎯','🦅','🐉','💜','🌊'];
+
+/* Estado local do perfil */
+let currentUser   = null; // dados do utilizador carregados da sessão
+let selectedAvatar = '👤'; // avatar selecionado no picker (antes de guardar)
+
+/* ── CONFIGURAÇÃO DOS RANKS ──────────────────────────────────
+   Define os thresholds e ícones para cada rank PvP */
+const RANKS = [
+  { name:'Bronze',   icon:'🥉', min:0,    max:999  },
+  { name:'Prata',    icon:'🥈', min:1000, max:2499 },
+  { name:'Ouro',     icon:'🥇', min:2500, max:4999 },
+  { name:'Diamante', icon:'💎', min:5000, max:9999 },
+  { name:'Mestre',   icon:'👑', min:10000,max:Infinity },
+];
+
+/* ── INICIALIZAÇÃO ───────────────────────────────────────────
+   Verifica sessão e carrega todos os dados do perfil */
+async function initProfile() {
+  // Load units da BD antes de tudo o resto
+  await loadUnitsData();
+
+  const data = await checkSession();
+
+  /* Se não está logado, redireciona para o login */
+  if (!data.logged) {
+    window.location.href = 'pages/login.html';
+    return;
+  }
+  currentUser    = data.user;
+  const team     = loadTeamLocal().map((unit, slot) => unit ? ({
+    slot,
+    unit_id: unit.id,
+    unit_name: unit.name,
+    unit_emoji: unit.emoji,
+    unit_img: unit.img,
+    unit_bg: unit.bg,
+    unit_rarity: unit.rarity,
+  }) : null).filter(Boolean);
+
+  /* Preencher topo do perfil */
+  document.getElementById('avatarEmoji').textContent     = currentUser.avatar || '👤';
+  document.getElementById('profileAvatar').title         = 'Clica para mudar o avatar';
+  document.getElementById('profileUsername').textContent = currentUser.username;
+  document.getElementById('profileSince').textContent    =
+    'Member since ' + new Date(currentUser.created_at).toLocaleDateString('en-US', { year:'numeric', month:'long' });
+
+  /* Título da página */
+  document.title = currentUser.username + ' · Anime Warriors III';
+
+  /* Stats */
+  document.getElementById('statVisits').textContent = (currentUser.total_visits || 0).toLocaleString('en-US');
+  document.getElementById('statPvpPts').textContent = (currentUser.pvp_points   || 0).toLocaleString('en-US');
+  document.getElementById('statRank'  ).textContent = currentUser.pvp_rank   || 'Bronze';
+  // favorite_unit agora é INT (id da unidade) — renderFavUnit trata o display
+
+  /* Rank PvP na sidebar */
+  renderRank(currentUser.pvp_points || 0, currentUser.pvp_rank || 'Bronze');
+
+  /* Unit favorita na sidebar — busca por id */
+  renderFavUnit(currentUser.favorite_unit);
+
+  /* Team */
+  renderTeam(team);
+
+  /* Formulários de edição */
+  document.getElementById('editUsername').value = currentUser.username;
+  document.getElementById('editEmail').value    = currentUser.email || '';
+  applyPasswordSetupState(currentUser);
+  renderDiscordConnection(currentUser);
+
+  /* Avatar picker */
+  buildAvatarPicker(currentUser.avatar || '👤');
+
+  /* Actividade recente (simulada — pode ser expandida com uma tabela real) */
+  renderActivity(currentUser);
+  applyDiscordFlashMessage();
+}
+
+/* ── RENDER: RANK PVP ───────────────────────────────────────
+   Calcula e mostra o rank atual e barra de progresso */
+function renderRank(pts, rankName) {
+  const rank     = RANKS.find(r => r.name === rankName) || RANKS[0];
+  const nextRank = RANKS[RANKS.indexOf(rank) + 1];
+
+  document.getElementById('rankIcon').textContent = rank.icon;
+  document.getElementById('rankName').textContent = rank.name;
+  document.getElementById('rankPts' ).textContent = pts.toLocaleString('en-US') + ' pontos';
+
+  if (nextRank) {
+    /* Percentagem dentro do rank atual */
+    const progress = Math.min(100, ((pts - rank.min) / (nextRank.min - rank.min)) * 100);
+    document.getElementById('rankCurrent').textContent = rank.name;
+    document.getElementById('rankNext'   ).textContent = nextRank.name + ' →';
+    document.getElementById('rankFill'   ).style.width = progress + '%';
+  } else {
+    /* Rank máximo */
+    document.getElementById('rankCurrent').textContent = '👑 Rank Máximo';
+    document.getElementById('rankNext'   ).textContent = '';
+    document.getElementById('rankFill'   ).style.width = '100%';
+  }
+}
+
+/* ── RENDER: EQUIPA ─────────────────────────────────────────
+   Mostra os 5 slots da equipa no perfil */
+function renderTeam(teamSlots) {
+  const grid = document.getElementById('profileTeamGrid');
+  grid.innerHTML = '';
+
+  for (let i = 0; i < 5; i++) {
+    const slot = teamSlots.find(t => parseInt(t.slot) === i);
+    const unit = slot?.unit_id ? UNITS_DATA.find(u => u.id === parseInt(slot.unit_id)) : null;
+    const isFilled = !!(slot?.unit_id || slot?.unit_emoji || slot?.unit_name);
+
+    const el = document.createElement('div');
+    el.className = 'team-slot-card' + (isFilled ? ' filled' : '');
+
+    if (isFilled) {
+      /* Slot preenchido */
+      const image = unit?.img_minimal || unit?.img_card || unit?.img || unit?.img_ingame || slot?.unit_img || '';
+      const iconContent = image
+        ? `<img src="${pfSafeUrl(image)}" alt="${pfSafe(unit?.name || slot?.unit_name || '')}" style="width:80%;height:80%;object-fit:contain" loading="lazy">`
+        : pfSafe(unit?.emoji || slot?.unit_emoji || 'FS');
+
+      const rarityRaw = unit?.rarity || slot?.unit_rarity || '';
+      const rarity = rarityRaw ? pfRarity(rarityRaw) : '';
+      const rarClass = rarity ? `rb-${rarity}` : '';
+      const unitName = unit?.name || slot?.unit_name || '?';
+
+      el.innerHTML = `
+        <span class="team-slot-num">#${i+1}</span>
+        <div class="team-slot-icon" style="background:${pfSafeBg(unit?.bg || slot?.unit_bg)}">
+          ${iconContent}
+        </div>
+        <div class="team-slot-name">${pfSafe(unitName)}</div>
+        ${rarClass ? `<span class="team-slot-rar rarity-badge ${rarClass}" style="font-size:8px">${rarLabel(rarity)}</span>` : ''}
+      `;
+    } else {
+      /* Slot vazio */
+      el.innerHTML = `
+        <span class="team-slot-num">#${i+1}</span>
+        <span style="font-size:24px;color:var(--dim)">➕</span>
+        <div class="team-slot-name" style="color:var(--dim)">Vazio</div>
+      `;
+    }
+    grid.appendChild(el);
+  }
+}
+
+/* ── RENDER: UNIDADE FAVORITA ───────────────────────────────
+   favId = INT id da unidade (or null/0 se nenhuma)          */
+function renderFavUnit(favId) {
+  const container = document.getElementById('favUnitDisplay');
+  if (!container) return;
+  const uid  = parseInt(favId) || 0;
+  const unit = uid ? UNITS_DATA.find(u => parseInt(u.id) === uid) : null;
+
+  if (unit) {
+    const image = unit.img_minimal || unit.img_card || unit.img || unit.img_ingame || '';
+    const icon = image
+      ? `<img src="${pfSafeUrl(image)}" alt="${pfSafe(unit.name || '')}" style="width:80%;height:80%;object-fit:contain" loading="lazy">`
+      : pfSafe(unit.emoji || '⚡');
+    const rarity = pfRarity(unit.rarity);
+    container.innerHTML = `
+      <a href="unit.php?id=${encodeURIComponent(unit.id)}" style="display:flex;align-items:center;gap:12px;text-decoration:none">
+        <div class="fav-unit-icon" style="background:${pfSafeBg(unit.bg)}">
+          ${icon}
+        </div>
+        <div class="fav-unit-info">
+          <div class="fav-unit-name" style="color:var(--text)">${pfSafe(unit.name)}</div>
+          <span class="rarity-badge rb-${rarity}">${rarLabel(rarity)}</span>
+        </div>
+        <span style="margin-left:auto;color:var(--gold);font-size:18px">♥</span>
+      </a>`;
+    // Actualizar o stat no topo
+    const statEl = document.getElementById('statFav');
+    if (statEl) statEl.textContent = unit.emoji || '♥';
+  } else {
+    container.innerHTML = `
+      <div class="fav-unit-icon" style="background:var(--bg3)">❓</div>
+      <div class="fav-unit-info">
+        <div class="fav-unit-name">Nonea</div>
+        <div style="font-size:11px;color:var(--muted)">Favorite a unit on its page</div>
+      </div>`;
+    const statEl = document.getElementById('statFav');
+    if (statEl) statEl.textContent = '?';
+  }
+}
+
+/* ── RENDER: ACTIVIDADE RECENTE ─────────────────────────────
+   Por agora usa dados simulados — pode ser expandido com BD */
+function renderActivity(user) {
+  const list = document.getElementById('activityList');
+  const items = [
+    { color: 'var(--blue)',   text: 'Fez login na wiki',         time: 'Agora' },
+    { color: 'var(--green)',  text: 'Team atualizada',         time: 'Hoje' },
+    { color: 'var(--gold)',   text: 'Rank PvP: ' + (user.pvp_rank||'Bronze'), time: 'This week' },
+    { color: 'var(--purple)', text: 'Account created',              time: new Date(user.created_at).toLocaleDateString('en-US') },
+  ];
+  list.innerHTML = items.map(a => `
+    <div class="activity-item">
+      <div class="activity-dot" style="background:${a.color};box-shadow:0 0 6px ${a.color}"></div>
+      <div class="activity-text">${pfSafe(a.text)}</div>
+      <div class="activity-time">${pfSafe(a.time)}</div>
+    </div>`).join('');
+}
+
+/* ── AVATAR PICKER ──────────────────────────────────────────
+   Constrói a grelha de emojis selecionáveis */
+function buildAvatarPicker(current) {
+  selectedAvatar = current;
+  const picker = document.getElementById('avatarPicker');
+  picker.innerHTML = AVATAR_OPTIONS.map(em => `
+    <div class="av-opt${em === current ? ' selected' : ''}"
+         onclick="selectAvatar('${em}')" title="${em}">${em}</div>
+  `).join('');
+}
+
+function applyPasswordSetupState(user) {
+  const needsSetup = !!Number(user?.needs_password_setup || 0);
+  const hint = document.getElementById('pwSetupHint');
+  const oldRow = document.getElementById('pwOldRow');
+  const oldInput = document.getElementById('pwOld');
+  const newLabel = document.getElementById('pwNewLabel');
+  const newInput = document.getElementById('pwNew');
+  const actionBtn = document.getElementById('pwActionBtn');
+
+  if (hint) hint.style.display = needsSetup ? 'block' : 'none';
+  if (oldRow) oldRow.style.display = needsSetup ? 'none' : '';
+  if (oldInput && needsSetup) oldInput.value = '';
+  if (newLabel) newLabel.textContent = needsSetup ? 'Create Password' : 'New Password';
+  if (newInput) newInput.placeholder = needsSetup
+    ? 'Create a password for this account…'
+    : 'New password (mín. 8 caracteres)…';
+  if (actionBtn) actionBtn.textContent = needsSetup ? '• Create Password' : '• Mudar Password';
+}
+
+function renderDiscordConnection(user) {
+  const text = document.getElementById('discordLinkText');
+  const connectBtn = document.getElementById('discordConnectBtn');
+  const disconnectBtn = document.getElementById('discordDisconnectBtn');
+  if (!text || !connectBtn || !disconnectBtn) return;
+
+  const discordId = String(user?.discord_id || '').trim();
+  const discordUsername = String(user?.discord_username || '').trim();
+  const discordGlobalName = String(user?.discord_global_name || '').trim();
+  const linkedName = discordGlobalName || discordUsername;
+
+  if (discordId) {
+    const handle = discordUsername ? ' @' + escapeHtml(discordUsername) : '';
+    text.innerHTML = linkedName
+      ? 'Ligado como <strong>' + escapeHtml(linkedName) + '</strong>' + handle + '.'
+      : 'Discord account linked successfully.';
+    connectBtn.style.display = 'none';
+    disconnectBtn.style.display = '';
+    return;
+  }
+
+  text.textContent = 'You do not have a Discord account linked to this profile yet.';
+  connectBtn.style.display = '';
+  disconnectBtn.style.display = 'none';
+}
+
+function applyDiscordFlashMessage() {
+  const msg = document.getElementById('discordMsg');
+  if (!msg) return;
+
+  const params = new URLSearchParams(window.location.search);
+  const status = params.get('discord');
+  const error = params.get('discord_error');
+
+  const errorMessages = {
+    discord_fail: 'Failed to complete Discord sign-in.',
+    discord_link_session: 'The link session expired. Try again from your profile.',
+    discord_already_linked: 'That Discord account is already linked to another user.',
+  };
+
+  if (status === 'linked') {
+    showMsg(msg, 'ok', '✅ Discord account linked successfully!');
+  } else if (error) {
+    showMsg(msg, 'error', '❌ ' + (errorMessages[error] || 'Could not link the Discord account.'));
+  } else {
+    return;
+  }
+
+  params.delete('discord');
+  params.delete('discord_error');
+  const query = params.toString();
+  const cleanUrl = window.location.pathname + (query ? '?' + query : '') + window.location.hash;
+  window.history.replaceState({}, document.title, cleanUrl);
+}
+
+function selectAvatar(emoji) {
+  selectedAvatar = emoji;
+  /* Refresh visual do picker */
+  document.querySelectorAll('.av-opt').forEach(el => {
+    el.classList.toggle('selected', el.textContent === emoji);
+  });
+  /* Preview imediato no avatar do banner */
+  document.getElementById('avatarEmoji').textContent = emoji;
+}
+
+/* Scroll para a secção de escolha de avatar */
+function openAvatarPicker() {
+  document.getElementById('avatarSection').scrollIntoView({ behavior: 'smooth' });
+}
+
+/* Scroll para a secção de edição */
+function scrollToEdit() {
+  document.getElementById('editSection').scrollIntoView({ behavior: 'smooth' });
+}
+
+async function connectDiscord() {
+  const msg = document.getElementById('discordMsg');
+  const btn = document.getElementById('discordConnectBtn');
+  if (!btn) return;
+
+  const originalLabel = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'A ligar...';
+
+  try {
+    const res = await fetch(appPath('discord_auth.php?mode=link'), {
+      credentials: 'same-origin',
+      cache: 'no-store',
+    });
+    const data = await res.json();
+    if (data?.success && data.url) {
+      window.location.href = data.url;
+      return;
+    }
+    showMsg(msg, 'error', '❌ ' + (data?.message || 'Could not start the Discord connection.'));
+  } catch (e) {
+    showMsg(msg, 'error', '❌ No server connection.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalLabel;
+  }
+}
+
+async function disconnectDiscord() {
+  const msg = document.getElementById('discordMsg');
+  if (!window.confirm('Do you want to unlink this Discord account?')) {
+    return;
+  }
+
+  const fd = new FormData();
+  fd.append('action', 'unlink_discord');
+  await appendCsrfToken(fd);
+
+  try {
+    const res = await fetch('auth.php', { method: 'POST', body: fd, credentials: 'same-origin' });
+    const data = await res.json();
+    if (data.success) {
+      currentUser.discord_id = '';
+      currentUser.discord_username = '';
+      currentUser.discord_global_name = '';
+      currentUser.discord_avatar = '';
+      renderDiscordConnection(currentUser);
+      showMsg(msg, 'ok', '✅ Discord connection removed.');
+    } else {
+      showMsg(msg, 'error', '❌ ' + (data.message || data.error || 'Error removing the connection.'));
+    }
+  } catch (e) {
+    showMsg(msg, 'error', '❌ No server connection.');
+  }
+}
+
+/* ── GUARDAR AVATAR ─────────────────────────────────────────*/
+async function saveAvatar() {
+  const msg = document.getElementById('avatarMsg');
+  const fd  = new FormData();
+  fd.append('action', 'update_profile');
+  fd.append('avatar', selectedAvatar);
+  await appendCsrfToken(fd);
+
+  try {
+    const res  = await fetch('auth.php', { method: 'POST', body: fd, credentials: 'same-origin' });
+    const data = await res.json();
+    if (data.success) {
+      showMsg(msg, 'ok', '✅ Avatar atualizado!');
+      currentUser.avatar = selectedAvatar;
+      /* Refresh o avatar no user menu injetado pelo shared.js */
+      document.querySelector('.user-avatar')?.replaceChildren(document.createTextNode(selectedAvatar));
+    } else {
+      showMsg(msg, 'error', '❌ ' + (data.message || data.error || 'Error while saving.'));
+    }
+  } catch(e) {
+    showMsg(msg, 'error', '❌ No server connection.');
+  }
+}
+
+/* ── GUARDAR DADOS DO PERFIL ────────────────────────────────*/
+async function saveProfile() {
+  const msg      = document.getElementById('profileMsg');
+  const username = document.getElementById('editUsername').value.trim();
+  const email    = document.getElementById('editEmail').value.trim();
+
+  if (!username || !email) { showMsg(msg, 'error', 'Fill in all fields.'); return; }
+  if (!/^[A-Za-z0-9_.-]{3,30}$/.test(username)) {
+    showMsg(msg, 'error', 'Username can only use letters, numbers, dot, hyphen, and underscore.'); return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    showMsg(msg, 'error', 'Invalid email.'); return;
+  }
+
+  const fd = new FormData();
+  fd.append('action',   'update_profile');
+  fd.append('username', username);
+  fd.append('email',    email);
+  await appendCsrfToken(fd);
+
+  try {
+    const res  = await fetch('auth.php', { method: 'POST', body: fd, credentials: 'same-origin' });
+    const data = await res.json();
+    if (data.success) {
+      showMsg(msg, 'ok', '✅ Profile atualizado!');
+      currentUser.username = username;
+      currentUser.email = email;
+      document.getElementById('profileUsername').textContent = username;
+      document.querySelector('.user-btn span')?.replaceChildren(document.createTextNode(username));
+      document.querySelector('.ud-username')?.replaceChildren(document.createTextNode(username));
+      document.title = username + ' · Anime Warriors III';
+    } else {
+      showMsg(msg, 'error', '❌ ' + (data.message || data.error || 'Error while saving.'));
+    }
+  } catch(e) {
+    showMsg(msg, 'error', '❌ No server connection.');
+  }
+}
+
+/* ── MUDAR PASSWORD ─────────────────────────────────────────*/
+async function changePassword() {
+  const msg  = document.getElementById('pwMsg');
+  const old  = document.getElementById('pwOld').value;
+  const nw   = document.getElementById('pwNew').value;
+  const nw2  = document.getElementById('pwNew2').value;
+  const needsSetup = !!Number(currentUser?.needs_password_setup || 0);
+
+  if ((!needsSetup && !old) || !nw || !nw2) { showMsg(msg, 'error', 'Fill in all fields.'); return; }
+  if (nw !== nw2)             { showMsg(msg, 'error', 'New passwords do not match.'); return; }
+  if (nw.length < 8)          { showMsg(msg, 'error', 'A nova password deve ter pelo menos 8 caracteres.'); return; }
+  if (new Blob([nw]).size > 72) { showMsg(msg, 'error', 'New password cannot be longer than 72 bytes.'); return; }
+
+  const fd = new FormData();
+  fd.append('action',       'change_password');
+  fd.append('old_password', old);
+  fd.append('new_password', nw);
+  await appendCsrfToken(fd);
+
+  try {
+    const res  = await fetch('auth.php', { method: 'POST', body: fd, credentials: 'same-origin' });
+    const data = await res.json();
+    if (data.success) {
+      showMsg(msg, 'ok', needsSetup ? '✅ Password criada com sucesso!' : '✅ Password alterada com sucesso!');
+      document.getElementById('pwOld').value  = '';
+      document.getElementById('pwNew').value  = '';
+      document.getElementById('pwNew2').value = '';
+      currentUser.needs_password_setup = 0;
+      applyPasswordSetupState(currentUser);
+    } else {
+      showMsg(msg, 'error', '❌ ' + (data.message || data.error || 'Error.'));
+    }
+  } catch(e) {
+    showMsg(msg, 'error', '❌ No server connection.');
+  }
+}
+
+/* ── APAGAR CONTA ───────────────────────────────────────────*/
+function openDeleteConfirm()  { document.getElementById('deleteOverlay').classList.add('open'); }
+function closeDeleteConfirm() { document.getElementById('deleteOverlay').classList.remove('open'); }
+
+async function deleteAccount() {
+  const msg = document.getElementById('deleteMsg');
+  const pw  = document.getElementById('deletePassword').value;
+  if (!pw) { showMsg(msg, 'error', 'Enter your password.'); return; }
+
+  const fd = new FormData();
+  fd.append('action',   'delete_account');
+  fd.append('password', pw);
+  await appendCsrfToken(fd);
+
+  try {
+    const res  = await fetch('auth.php', { method: 'POST', body: fd, credentials: 'same-origin' });
+    const data = await res.json();
+    if (data.success) {
+      clearAuthStorage();
+      localStorage.removeItem('fighters_defense_team');
+      localStorage.removeItem('atd_team');
+      window.location.replace('pages/login.html');
+    } else {
+      showMsg(msg, 'error', '❌ ' + (data.message || data.error || 'Error.'));
+    }
+  } catch(e) {
+    showMsg(msg, 'error', '❌ No server connection.');
+  }
+}
+
+/* ── HELPERS ────────────────────────────────────────────────*/
+
+/** Mostra uma mensagem de feedback numa div .inline-msg */
+function showMsg(el, type, text) {
+  el.className = 'inline-msg ' + type;
+  el.textContent = text;
+  /* Auto-esconder após 4s */
+  clearTimeout(el._timer);
+  el._timer = setTimeout(() => { el.className = 'inline-msg'; }, 4000);
+}
+
+/** @deprecated — favorite_unit agora é INT id, usar renderFavUnit(id) */
+function getFavEmoji(id) {
+  const unit = UNITS_DATA.find(u => parseInt(u.id) === parseInt(id));
+  return unit?.emoji || null;
+}
+
+/** Label de raridade */
+function rarLabel(r) {
+  return {myth:'Mítica',legend:'Lendária',epic:'Épica',rare:'Rare',common:'Rare',secreto:'Secret'}[r] || r;
+}
+
+/* ── FAVORITOS ───────────────────────────────────────────────
+   Carrega e renderiza a lista de favoritos do utilizador */
+async function renderFavorites() {
+  const container = document.getElementById('favUnitDisplay');
+  if (!container) return;
+  try {
+    const res   = await fetch('auth.php?action=get_favorites');
+    const favs  = await res.json();
+    if (!Array.isArray(favs) || !favs.length) {
+      container.innerHTML = `
+        <div class="fav-unit-icon" style="background:var(--bg3)">❓</div>
+        <div class="fav-unit-info">
+          <div class="fav-unit-name">None favorito</div>
+          <div class="fav-unit-role" style="font-size:11px;color:var(--muted)">Favorita units nas suas páginas</div>
+        </div>`;
+      return;
+    }
+    // Mostra até 3 favoritos na sidebar
+    container.innerHTML = favs.slice(0,3).map(u => `
+      <a href="unit.php?id=${encodeURIComponent(u.id)}" style="display:flex;align-items:center;gap:10px;padding:8px;
+         background:var(--bg3);border-radius:10px;border:1px solid var(--border);
+         text-decoration:none;margin-bottom:6px;transition:border-color .2s"
+         onmouseover="this.style.borderColor='var(--orange)'"
+         onmouseout="this.style.borderColor='var(--border)'">
+        <div style="width:36px;height:36px;background:${pfSafeBg(u.bg)};border-radius:8px;
+             display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">
+          ${(u.img_minimal || u.img_card || u.img || u.img_ingame) ? `<img src="${pfSafeUrl(u.img_minimal || u.img_card || u.img || u.img_ingame)}" alt="${pfSafe(u.name || '')}" style="width:90%;height:90%;object-fit:contain">` : pfSafe(u.emoji||'⚡')}
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--text)">${pfSafe(u.name)}</div>
+          <span class="rarity-badge rb-${pfRarity(u.rarity)}">${rarLabel(pfRarity(u.rarity))}</span>
+        </div>
+        <span style="margin-left:auto;color:var(--orange);font-size:14px">♥</span>
+      </a>`).join('');
+  } catch(e) {
+    container.innerHTML = `<div style="color:var(--muted);font-size:12px">Error loading.</div>`;
+  }
+}
+
+/* ── SISTEMA DE EQUIPA — guardar direto da BD ────────────────
+   Cada slot tem um selector de unidade para o utilizador escolher */
+async function openTeamBuilder() {
+  window.location.href = 'pages/guides.html';
+}
+
+/* ── ARRANCAR ───────────────────────────────────────────────*/
+initProfile();
+</script>
+</body>
+</html>
+

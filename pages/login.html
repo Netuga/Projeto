@@ -1,0 +1,587 @@
+    <!DOCTYPE html>
+    <!-- ═══════════════════════════════════════════════
+    login.html — Anime Warriors III
+    Página de login e registo. Formulário com tabs, barra de força da password e validação client-side.
+    ═══════════════════════════════════════════════ -->
+
+    <html lang="en">
+    <head>
+<meta charset="UTF-8"/>
+  <base href="../"><meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>Sign In · Anime Warriors III</title>
+    <link rel="stylesheet" href="assets/css/shared.css?v=sticky-footer-3"/>
+    <style>
+    html,
+    body {
+    min-height: 100%;
+    background:
+        radial-gradient(ellipse 70% 60% at 20% 40%, rgba(185,16,28,0.10) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 70% at 80% 60%, rgba(196,24,37,0.10) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    body {
+    overflow-x: hidden;
+    }
+
+    .auth-page {
+    position: fixed;
+    inset: -2px;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 40px 20px;
+    background:
+        radial-gradient(ellipse 70% 60% at 20% 40%, rgba(185,16,28,0.10) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 70% at 80% 60%, rgba(196,24,37,0.10) 0%, transparent 60%),
+        var(--bg);
+    overflow: hidden;
+    isolation: isolate;
+    }
+    /* Partículas decorativas de fundo no login */
+    .auth-page::after {
+    content: '';
+    position: absolute; inset: 0; pointer-events: none;
+    background-image:
+        radial-gradient(circle 1px at 20% 20%, rgba(185,16,28,0.4) 0%, transparent 100%),
+        radial-gradient(circle 1px at 80% 70%, rgba(196,24,37,0.4) 0%, transparent 100%),
+        radial-gradient(circle 1px at 50% 50%, rgba(255,204,0,0.2) 0%, transparent 100%);
+    }
+
+    .auth-box {
+    width: 100%; max-width: 440px;
+    background: var(--card);
+    border: 1px solid rgba(196,24,37,0.25);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,.6), 0 0 60px rgba(185,16,28,0.08);
+    position: relative;
+    z-index: 1;
+    }
+
+    .auth-header {
+    padding: 32px 32px 24px;
+    text-align: center;
+    background: linear-gradient(135deg, rgba(185,16,28,0.06), var(--card));
+    border-bottom: 1px solid rgba(196,24,37,0.2);
+    }
+    .auth-logo {
+    font-family: var(--font-display);
+    font-size: 28px; letter-spacing: 4px;
+    background: linear-gradient(90deg, var(--blue), var(--orange));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    display: block; margin-bottom: 8px;
+    }
+    .auth-header p {
+    font-size: 13px; color: var(--muted);
+    font-family: var(--font-body); letter-spacing: 0.5px;
+    }
+
+    .auth-tabs {
+    display: flex;
+    border-bottom: 1px solid rgba(196,24,37,0.15);
+    background: rgba(0,0,0,0.2);
+    }
+    .auth-tab {
+    flex: 1; padding: 14px;
+    background: none; border: none;
+    color: var(--muted); font-family: var(--font-display);
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; cursor: pointer;
+    transition: all .2s; position: relative;
+    }
+    .auth-tab::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+    height: 2px; background: linear-gradient(90deg, var(--blue), var(--orange));
+    transform: scaleX(0); transition: transform .25s;
+    }
+    .auth-tab.active { color: var(--blue); }
+    .auth-tab.active::after { transform: scaleX(1); }
+
+    .auth-body { padding: 28px 32px; }
+    .auth-form { display: none; }
+    .auth-form.active { display: block; animation: fadeUp .3s ease; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+    display: block;
+    font-family: var(--font-display); font-size: 9px;
+    letter-spacing: 3px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 6px;
+    }
+    .form-input {
+    width: 100%;
+    background: var(--bg3); border: 1px solid rgba(196,24,37,0.2);
+    border-radius: 10px; color: var(--text);
+    font-family: var(--font-body); font-size: 15px;
+    padding: 11px 14px; outline: none;
+    transition: border-color .2s, box-shadow .2s;
+    }
+    .form-input:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(196,24,37,.12);
+    }
+    .form-input.error { border-color: var(--red); }
+
+    .auth-msg {
+    padding: 10px 14px; border-radius: 8px;
+    font-size: 13px; margin-bottom: 16px;
+    display: none; font-family: var(--font-body);
+    }
+    .auth-msg.error   { background: rgba(255,34,68,.1);  color: var(--red);   border: 1px solid rgba(255,34,68,.3);  display: block; }
+    .auth-msg.success { background: rgba(0,255,136,.1);  color: var(--green); border: 1px solid rgba(0,255,136,.3); display: block; }
+
+    .btn-auth {
+    width: 100%; padding: 13px;
+    background: linear-gradient(135deg, var(--blue), var(--orange));
+    border: none; border-radius: 10px;
+    color: #fff; font-family: var(--font-display);
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase;
+    cursor: pointer; transition: all .25s;
+    margin-top: 4px;
+    box-shadow: 0 4px 24px rgba(185,16,28,0.25);
+    }
+    .btn-auth:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(196,24,37,.5); }
+    .btn-auth:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+    .auth-footer-link {
+    text-align: center; margin-top: 16px;
+    font-size: 13px; color: var(--muted);
+    font-family: var(--font-body);
+    }
+    .auth-footer-link a {
+    color: var(--orange); text-decoration: none;
+    font-weight: 700;
+    }
+    .auth-footer-link a:hover { text-decoration: underline; color: var(--blue); }
+
+    .btn-social {
+    width: 100%; padding: 12px;
+    border-radius: 10px;
+    font-family: var(--font-display);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    cursor: pointer; transition: all .25s;
+    margin-top: 12px;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .btn-social:hover { transform: translateY(-1px); }
+    .btn-social:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+    .btn-social img,
+    .btn-social svg { flex-shrink: 0; }
+
+    .btn-google {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: var(--text);
+    }
+    .btn-google:hover {
+    border-color: rgba(196,24,37,0.5);
+    background: rgba(196,24,37,0.06);
+    }
+
+    .btn-discord {
+    background: linear-gradient(135deg, #b20d19, #7f0812);
+    border: 1px solid rgba(178,13,25,0.4);
+    color: #fff;
+    box-shadow: 0 8px 26px rgba(178,13,25,0.28);
+    }
+    .btn-discord:hover {
+    box-shadow: 0 10px 32px rgba(178,13,25,0.38);
+    }
+
+    .btn-roblox {
+    background: #202124;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    }
+    .btn-roblox:hover {
+    background: #303134;
+    border-color: rgba(255,255,255,0.4);
+    }
+
+    .auth-divider {
+    display: flex; align-items: center; gap: 10px;
+    margin: 16px 0 4px;
+    }
+    .auth-divider::before,
+    .auth-divider::after {
+    content: ''; flex: 1;
+    height: 1px; background: rgba(196,24,37,0.15);
+    }
+    .auth-divider span {
+    font-size: 11px; color: var(--muted);
+    font-family: var(--font-display); letter-spacing: 2px;
+    }
+
+    @media (max-width: 560px), (max-height: 760px) {
+    .auth-page {
+        align-items: flex-start;
+        padding: 22px 14px;
+        overflow-y: auto;
+    }
+
+    .auth-box {
+        margin: auto 0;
+    }
+
+    .auth-header {
+        padding: 24px 20px 18px;
+    }
+
+    .auth-body {
+        padding: 22px 20px;
+    }
+    }
+    </style>
+    </head>
+    <body>
+    <div class="auth-page">
+    <div class="banner-map-bg" aria-hidden="true"></div>
+    <div class="banner-map-frame" aria-hidden="true"></div>
+    <div class="auth-box">
+        <div class="auth-header">
+        <a href="pages/home.html" style="display:inline-block;margin-bottom:8px;">
+            <img src="assets/img/fighters-logo.png" alt="Anime Warriors III" style="height:56px;width:auto;filter:drop-shadow(0 0 12px rgba(185,16,28,0.5));" onerror="this.style.display='none';document.getElementById('auth-logo-fallback').style.display='block'">
+            <span id="auth-logo-fallback" class="auth-logo" style="display:none">ANIME WARRIORS</span>
+        </a>
+        <p>Sign in to your account or create a new one</p>
+        </div>
+
+        <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchTab('login')">Sign In</button>
+        <button class="auth-tab"        onclick="switchTab('register')">Create Account</button>
+        </div>
+
+        <div class="auth-body">
+
+        <div class="auth-form active" id="form-login">
+            <div class="auth-msg" id="login-msg"></div>
+            <div class="form-group">
+            <label>Username or Email</label>
+            <input type="text" class="form-input" id="login-username" placeholder="Your username…" autocomplete="username"/>
+            </div>
+            <div class="form-group">
+            <label>Password</label>
+            <input type="password" class="form-input" id="login-password" placeholder="Your password…" autocomplete="current-password"/>
+            </div>
+            <button class="btn-auth" id="btn-login" onclick="doLogin()">Entrar →</button>
+
+            <div class="auth-divider"><span>or</span></div>
+
+
+            <button class="btn-social btn-google" id="btn-google" onclick="loginGoogle('btn-google')">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" alt="Google">
+            Entrar com o Google
+            </button>
+
+            <button class="btn-social btn-discord" id="btn-discord" onclick="loginDiscord('btn-discord')">
+            <svg width="18" height="18" viewBox="0 0 127.14 96.36" aria-hidden="true">
+                <path fill="currentColor" d="M107.7 8.07A105.15 105.15 0 0 0 81.47 0a72.06 72.06 0 0 0-3.36 6.83 97.68 97.68 0 0 0-29.11 0A72.37 72.37 0 0 0 45.64 0 105.89 105.89 0 0 0 19.39 8.09C2.79 32.65-1.71 56.6.54 80.21a105.73 105.73 0 0 0 32.17 16.15 77.7 77.7 0 0 0 6.89-11.14 68.42 68.42 0 0 1-10.85-5.18c.91-.69 1.8-1.42 2.66-2.18a75.57 75.57 0 0 0 65.27 0c.87.76 1.76 1.49 2.67 2.18a68.68 68.68 0 0 1-10.87 5.19 77 77 0 0 0 6.89 11.13A105.25 105.25 0 0 0 128 80.22c2.65-23.52-1.38-47.32-20.3-72.15ZM42.45 65.69c-6.27 0-11.43-5.73-11.43-12.78S36.06 40.12 42.45 40.12s11.55 5.8 11.43 12.79-5.04 12.78-11.43 12.78Zm42.24 0c-6.27 0-11.43-5.73-11.43-12.78S78.3 40.12 84.69 40.12s11.56 5.8 11.44 12.79-5.04 12.78-11.44 12.78Z"/>
+            </svg>
+            Entrar com o Discord
+            </button>
+
+            <button class="btn-social btn-roblox" id="btn-roblox" onclick="loginRoblox('btn-roblox')">
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M5.2 1.2 1.1 18.8l17.7 4.1 4.1-17.7L5.2 1.2Zm6.1 13.1-1.7-.4.4-1.7 1.7.4-.4 1.7Z"/></svg>
+            Entrar com o Roblox
+            </button>
+
+            <div class="auth-footer-link" style="margin-top:16px">
+            Não tens uma conta? <a onclick="switchTab('register')">Criar conta</a>
+            </div>
+        </div>
+
+        <div class="auth-form" id="form-register">
+            <div class="auth-msg" id="register-msg"></div>
+            <div class="form-group">
+            <label>Username</label>
+            <input type="text" class="form-input" id="reg-username" placeholder="Choose a username…" autocomplete="username"/>
+            </div>
+            <div class="form-group">
+            <label>Email</label>
+            <input type="email" class="form-input" id="reg-email" placeholder="Your email…" autocomplete="email"/>
+            </div>
+            <div class="form-group">
+            <label>Password</label>
+            <input type="password" class="form-input" id="reg-password" placeholder="Minimum 8 characters…" autocomplete="new-password" oninput="checkPasswordStrength(this.value)"/>
+            <!-- Barra de força -->
+            <div style="margin-top:8px">
+                <div style="height:4px;background:var(--bg3);border-radius:2px;overflow:hidden">
+                <div id="pw-bar" style="height:100%;width:0%;border-radius:2px;transition:width .3s,background .3s"></div>
+                </div>
+                <div id="pw-label" style="font-size:10px;color:var(--muted);margin-top:4px;font-family:var(--font-mono);letter-spacing:1px"></div>
+            </div>
+            </div>
+            <div class="form-group">
+            <label>Confirm Password</label>
+            <input type="password" class="form-input" id="reg-password2" placeholder="Repeat password…" autocomplete="new-password"/>
+            </div>
+            <button class="btn-auth" id="btn-register" onclick="doRegister()">Create Account →</button>
+
+            <div class="auth-divider"><span>or</span></div>
+
+            <button class="btn-social btn-google" id="btn-google-reg" onclick="loginGoogle('btn-google-reg')">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" alt="Google">
+            Continue with Google
+            </button>
+
+            <button class="btn-social btn-discord" id="btn-discord-reg" onclick="loginDiscord('btn-discord-reg')">
+            <svg width="18" height="18" viewBox="0 0 127.14 96.36" aria-hidden="true">
+                <path fill="currentColor" d="M107.7 8.07A105.15 105.15 0 0 0 81.47 0a72.06 72.06 0 0 0-3.36 6.83 97.68 97.68 0 0 0-29.11 0A72.37 72.37 0 0 0 45.64 0 105.89 105.89 0 0 0 19.39 8.09C2.79 32.65-1.71 56.6.54 80.21a105.73 105.73 0 0 0 32.17 16.15 77.7 77.7 0 0 0 6.89-11.14 68.42 68.42 0 0 1-10.85-5.18c.91-.69 1.8-1.42 2.66-2.18a75.57 75.57 0 0 0 65.27 0c.87.76 1.76 1.49 2.67 2.18a68.68 68.68 0 0 1-10.87 5.19 77 77 0 0 0 6.89 11.13A105.25 105.25 0 0 0 128 80.22c2.65-23.52-1.38-47.32-20.3-72.15ZM42.45 65.69c-6.27 0-11.43-5.73-11.43-12.78S36.06 40.12 42.45 40.12s11.55 5.8 11.43 12.79-5.04 12.78-11.43 12.78Zm42.24 0c-6.27 0-11.43-5.73-11.43-12.78S78.3 40.12 84.69 40.12s11.56 5.8 11.44 12.79-5.04 12.78-11.44 12.78Z"/>
+            </svg>
+            Continue with Discord
+            </button>
+
+            <button class="btn-social btn-roblox" id="btn-roblox-reg" onclick="loginRoblox('btn-roblox-reg')">
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M5.2 1.2 1.1 18.8l17.7 4.1 4.1-17.7L5.2 1.2Zm6.1 13.1-1.7-.4.4-1.7 1.7.4-.4 1.7Z"/></svg>
+            Continue with Roblox
+            </button>
+
+            <div class="auth-footer-link" style="margin-top:16px">
+            Already have an account? <a onclick="switchTab('login')">Sign in here</a>
+            </div>
+        </div>
+
+        </div>
+    </div>
+    </div>
+
+    <script src="assets/js/shared.js?v=fd5"></script>
+    <script>
+    // Verificar se já está logado
+    checkSession().then(data => {
+    if (data.logged) window.location.href = 'pages/home.html';
+    });
+
+    function switchTab(tab) {
+    document.querySelectorAll('.auth-tab').forEach((t, i) => {
+        t.classList.toggle('active', (tab === 'login' && i === 0) || (tab === 'register' && i === 1));
+    });
+    document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+    document.getElementById('form-' + tab).classList.add('active');
+    }
+
+    async function doLogin() {
+    const btn = document.getElementById('btn-login');
+    const msg = document.getElementById('login-msg');
+    const username = document.getElementById('login-username').value.trim();
+    const password = document.getElementById('login-password').value;
+
+    if (!username || !password) {
+        showMsg(msg, 'error', 'Fill in all fields.');
+        return;
+    }
+
+    btn.disabled = true; btn.textContent = 'Signing in…';
+
+    const fd = new FormData();
+    fd.append('action', 'login');
+    fd.append('username', username);
+    fd.append('password', password);
+    await appendCsrfToken(fd);
+
+    try {
+        const res = await fetch('auth.php', {
+        method: 'POST',
+        body: fd,
+        credentials: 'same-origin',
+        cache: 'no-store',
+        });
+        const data = await res.json();
+
+        if (data.success) {
+        const session = await checkSession();
+        if (!session.logged) {
+        showMsg(msg, 'error', 'Login aceite, mas a sessão não ficou ativa. Atualiza a página e tenta novamente.');
+        btn.disabled = false; btn.textContent = 'Sign In →';
+        return;
+        }
+        showMsg(msg, 'success', '✅ ' + data.message);
+        clearAuthStorage();
+        setTimeout(() => window.location.replace('pages/home.html'), 500);
+        } else {
+        showMsg(msg, 'error', '❌ ' + (data.message || data.error || 'Sign-in failed.'));
+        btn.disabled = false; btn.textContent = 'Sign In →';
+        }
+    } catch(e) {
+        showMsg(msg, 'error', '❌ Server connection error.');
+        btn.disabled = false; btn.textContent = 'Sign In →';
+    }
+    }
+
+    // Força da password
+    function checkPasswordStrength(pw) {
+    const bar   = document.getElementById('pw-bar');
+    const label = document.getElementById('pw-label');
+    if (!bar) return;
+    let score = 0;
+    if (pw.length >= 8)  score++;
+    if (pw.length >= 12) score++;
+    if (/[A-Z]/.test(pw)) score++;
+    if (/[0-9]/.test(pw)) score++;
+    if (/[^A-Za-z0-9]/.test(pw)) score++;
+    const levels = [
+        { pct:'20%', color:'#ff3d7f', text:'VERY WEAK' },
+        { pct:'40%', color:'#ff8040', text:'WEAK'       },
+        { pct:'60%', color:'#ffd040', text:'FAIR'    },
+        { pct:'80%', color:'#d91f2f', text:'GOOD'         },
+        { pct:'100%',color:'#00ff9d', text:'STRONG ✓'     },
+    ];
+    const lvl = levels[Math.min(score, 4)];
+    bar.style.width      = score === 0 ? '0%' : lvl.pct;
+    bar.style.background = lvl.color;
+    label.textContent    = score === 0 ? '' : lvl.text;
+    label.style.color    = lvl.color;
+    }
+
+    async function doRegister() {
+    const btn = document.getElementById('btn-register');
+    const msg = document.getElementById('register-msg');
+    const username  = document.getElementById('reg-username').value.trim();
+    const email     = document.getElementById('reg-email').value.trim();
+    const password  = document.getElementById('reg-password').value;
+    const password2 = document.getElementById('reg-password2').value;
+
+    if (!username || !email || !password || !password2) {
+        showMsg(msg, 'error', 'Fill in all fields.'); return;
+    }
+    if (username.length < 3) {
+        showMsg(msg, 'error', 'Username must be at least 3 characters.'); return;
+    }
+    if (!/^[A-Za-z0-9_.-]{3,30}$/.test(username)) {
+        showMsg(msg, 'error', 'Username can only use letters, numbers, dot, hyphen, and underscore.'); return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showMsg(msg, 'error', 'Invalid email.'); return;
+    }
+    if (password.length < 8) {
+        showMsg(msg, 'error', 'Password must be at least 8 characters.'); return;
+    }
+    if (new Blob([password]).size > 72) {
+        showMsg(msg, 'error', 'Password cannot be longer than 72 bytes.'); return;
+    }
+    if (password !== password2) {
+        showMsg(msg, 'error', 'Passwords do not match.'); return;
+    }
+
+    btn.disabled = true; btn.textContent = 'Creating account…';
+
+    const fd = new FormData();
+    fd.append('action', 'register');
+    fd.append('username', username);
+    fd.append('email', email);
+    fd.append('password', password);
+    await appendCsrfToken(fd);
+
+    try {
+        const res  = await fetch('auth.php', {
+        method: 'POST',
+        body: fd,
+        credentials: 'same-origin',
+        cache: 'no-store',
+        });
+        const data = await res.json();
+        if (data.success) {
+        const session = await checkSession();
+        if (!session.logged) {
+        showMsg(msg, 'error', 'Conta criada, mas a sessão não ficou ativa. Tenta entrar novamente.');
+        btn.disabled = false; btn.textContent = 'Create Account →';
+        return;
+        }
+        showMsg(msg, 'success', '✅ ' + data.message);
+        clearAuthStorage();
+        setTimeout(() => window.location.replace('pages/home.html'), 700);
+        } else {
+        showMsg(msg, 'error', '❌ ' + (data.message || data.error || 'Account creation failed.'));
+        btn.disabled = false; btn.textContent = 'Create Account →';
+        }
+    } catch(e) {
+        showMsg(msg, 'error', '❌ Server connection error.');
+        btn.disabled = false; btn.textContent = 'Create Account →';
+    }
+    }
+
+    function showMsg(el, type, text) {
+    el.className = 'auth-msg ' + type;
+    el.textContent = text;
+    }
+
+    const GOOGLE_ICON_HTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" alt="Google">';
+    const DISCORD_ICON_HTML = '<svg width="18" height="18" viewBox="0 0 127.14 96.36" aria-hidden="true"><path fill="currentColor" d="M107.7 8.07A105.15 105.15 0 0 0 81.47 0a72.06 72.06 0 0 0-3.36 6.83 97.68 97.68 0 0 0-29.11 0A72.37 72.37 0 0 0 45.64 0 105.89 105.89 0 0 0 19.39 8.09C2.79 32.65-1.71 56.6.54 80.21a105.73 105.73 0 0 0 32.17 16.15 77.7 77.7 0 0 0 6.89-11.14 68.42 68.42 0 0 1-10.85-5.18c.91-.69 1.8-1.42 2.66-2.18a75.57 75.57 0 0 0 65.27 0c.87.76 1.76 1.49 2.67 2.18a68.68 68.68 0 0 1-10.87 5.19 77 77 0 0 0 6.89 11.13A105.25 105.25 0 0 0 128 80.22c2.65-23.52-1.38-47.32-20.3-72.15ZM42.45 65.69c-6.27 0-11.43-5.73-11.43-12.78S36.06 40.12 42.45 40.12s11.55 5.8 11.43 12.79-5.04 12.78-11.43 12.78Zm42.24 0c-6.27 0-11.43-5.73-11.43-12.78S78.3 40.12 84.69 40.12s11.56 5.8 11.44 12.79-5.04 12.78-11.44 12.78Z"/></svg>';
+    const SOCIAL_BUTTON_COPY = {
+    'btn-google': { idle: GOOGLE_ICON_HTML + ' Sign in with Google', loading: GOOGLE_ICON_HTML + ' Redirecting…' },
+    'btn-google-reg': { idle: GOOGLE_ICON_HTML + ' Continue with Google', loading: GOOGLE_ICON_HTML + ' Redirecting…' },
+    'btn-discord': { idle: DISCORD_ICON_HTML + ' Sign in with Discord', loading: DISCORD_ICON_HTML + ' Redirecting…' },
+    'btn-discord-reg': { idle: DISCORD_ICON_HTML + ' Continue with Discord', loading: DISCORD_ICON_HTML + ' Redirecting…' },
+    };
+
+    async function loginSocial(endpoint, buttonId) {
+    const btn = document.getElementById(buttonId);
+    const msg = document.getElementById(buttonId.includes('reg') ? 'register-msg' : 'login-msg');
+    const copy = SOCIAL_BUTTON_COPY[buttonId];
+    if (!btn || !copy) return;
+
+    btn.disabled = true;
+    btn.innerHTML = copy.loading;
+
+    try {
+        await checkSession();
+        const res  = await fetch(endpoint, { credentials: 'same-origin', cache: 'no-store' });
+        const data = await res.json();
+        if (data.url) {
+        window.location.href = data.url;
+        return;
+        }
+
+        throw new Error(data.message || 'Failed to start sign-in.');
+    } catch (error) {
+        btn.disabled = false;
+        btn.innerHTML = copy.idle;
+        showMsg(msg, 'error', '❌ ' + (error.message || 'Failed to start sign-in.'));
+    }
+    }
+
+    function loginGoogle(buttonId = 'btn-google') {
+    return loginSocial(appPath('google_auth.php'), buttonId);
+    }
+
+    function loginDiscord(buttonId = 'btn-discord') {
+    return loginSocial(appPath('discord_auth.php'), buttonId);
+    }
+
+    async function loginRoblox(buttonId = 'btn-roblox') {
+    const btn = document.getElementById(buttonId);
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'A redirecionar para o Roblox…';
+    }
+    await checkSession();
+    window.location.assign(appPath('roblox/roblox_auth.php'));
+    }
+
+    // Error vindo do callback social
+    const _gErr = {
+    google_fail: 'Google sign-in failed. Please try again.',
+    discord_fail: 'Falha no login com Discord. Tenta novamente.',
+    roblox_fail: 'Falha no login com Roblox. Confirma a configuração OAuth e tenta novamente.',
+    };
+    const _gMsg = _gErr[new URLSearchParams(window.location.search).get('error')];
+    if (_gMsg) {
+    const msg = document.getElementById('login-msg');
+    showMsg(msg, 'error', '❌ ' + _gMsg);
+    }
+
+    // Enter key
+    document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+        const active = document.querySelector('.auth-form.active').id;
+        if (active === 'form-login') doLogin();
+        else doRegister();
+    }
+    });
+    </script>
+    </body>
+    </html>

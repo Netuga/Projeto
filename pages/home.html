@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8" />
+  <base href="../">
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Anime Rush</title>
+<link rel="stylesheet" href="assets/css/shared.css?v=sticky-footer-3" />
+  <style>
+    .hero {
+      position: relative;
+      min-height: 620px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 18% 32%, rgba(235, 235, 235, .16), transparent 28%),
+        radial-gradient(circle at 82% 26%, rgba(196, 24, 37, .18), transparent 26%),
+        linear-gradient(180deg, #07111d 0%, #120405 100%);
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, .025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, .025) 1px, transparent 1px);
+      background-size: 64px 64px;
+      opacity: .38;
+    }
+
+    #particles {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      width: min(1240px, 100%);
+      padding: 48px 24px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 420px;
+      gap: 22px;
+      align-items: end;
+    }
+
+    .hero-copy {
+      padding: 26px;
+      border-radius: 26px;
+      border: 1px solid var(--line);
+      background: rgba(7, 18, 30, .72);
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .hero-kicker {
+      color: var(--blue);
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    .hero-title {
+      margin-top: 14px;
+      font-family: var(--font-display);
+      font-size: clamp(42px, 8vw, 88px);
+      line-height: .92;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .hero-title span {
+      display: block;
+      color: var(--gold);
+    }
+
+    .hero-copy p {
+      max-width: 620px;
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .stat-card {
+      padding: 18px;
+      min-height: 124px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background: rgba(8, 19, 31, .86);
+      box-shadow: var(--shadow-md);
+    }
+
+    .stat-card span {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .stat-card strong {
+      display: block;
+      margin-top: 8px;
+      font-family: var(--font-display);
+      font-size: 34px;
+    }
+
+    .stat-card.is-version strong {
+      font-size: 28px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .feature-card,
+    .recent-card {
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(11, 24, 39, .96), rgba(8, 19, 31, .96));
+      box-shadow: var(--shadow-md);
+    }
+
+    .feature-card h3,
+    .recent-card h3 {
+      font-family: var(--font-display);
+      font-size: 18px;
+      letter-spacing: .04em;
+    }
+
+    .feature-card p {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .feature-card a {
+      display: inline-flex;
+      margin-top: 14px;
+      color: var(--blue);
+      text-decoration: none;
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .recent-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .recent-unit {
+      display: grid;
+      grid-template-columns: 70px minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, .03);
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .recent-art {
+      width: 70px;
+      height: 70px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .recent-art img {
+      width: 74%;
+      max-height: 58px;
+      object-fit: contain;
+    }
+
+    .recent-title {
+      font-family: var(--font-display);
+      font-size: 16px;
+    }
+
+    .recent-copy {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .news-strip {
+      position: relative;
+      overflow: hidden;
+      min-height: 52px;
+      margin-bottom: 22px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(7, 18, 30, .86);
+      display: grid;
+      grid-template-columns: 124px minmax(0, 1fr);
+      align-items: center;
+      box-shadow: var(--shadow-md);
+    }
+
+    .news-label {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      border-right: 1px solid var(--line);
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--text);
+      background: rgba(235, 235, 235, .04);
+    }
+
+    .news-viewport {
+      overflow: hidden;
+      min-width: 0;
+      mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+    }
+
+    .news-track {
+      width: max-content;
+      display: flex;
+      align-items: center;
+      gap: 76px;
+      padding: 0 38px;
+      white-space: nowrap;
+      will-change: transform;
+      animation: newsMarquee 48s linear infinite;
+    }
+
+    .news-item {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .news-item strong {
+      color: var(--text);
+      font-family: var(--font-display);
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    @keyframes newsMarquee {
+      from { transform: translate3d(-50%, 0, 0); }
+      to { transform: translate3d(0, 0, 0); }
+    }
+
+    .staff-list,
+    .quick-grid {
+      padding: 16px;
+    }
+
+    .staff-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .staff-member {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .staff-avatar,
+    .quick-image {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: linear-gradient(135deg, #102946, #151b38);
+      color: var(--sky);
+      font-family: var(--font-display);
+      font-weight: 700;
+      letter-spacing: .04em;
+    }
+
+    .staff-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      font-size: 12px;
+    }
+
+    .staff-avatar img,
+    .quick-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .staff-name {
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .staff-role {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .staff-presence {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      min-width: 72px;
+    }
+
+    .staff-status {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .18);
+      box-shadow: none;
+    }
+
+    .staff-status.is-online {
+      background: var(--green);
+      box-shadow: 0 0 10px rgba(210, 210, 210, .9);
+    }
+
+    .staff-status.is-idle {
+      background: var(--gold);
+      box-shadow: 0 0 10px rgba(255, 210, 79, .85);
+    }
+
+    .staff-status.is-dnd {
+      background: var(--orange);
+      box-shadow: 0 0 10px rgba(196, 24, 37, .85);
+    }
+
+    .staff-status.is-unknown {
+      background: var(--blue);
+      box-shadow: 0 0 10px rgba(235, 235, 235, .85);
+    }
+
+    .staff-status.is-unavailable {
+      background: rgba(255, 255, 255, .18);
+      box-shadow: none;
+    }
+
+    .staff-status-label {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .quick-link {
+      min-height: 82px;
+      padding: 12px 10px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      background: rgba(235, 235, 235, .06);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      text-decoration: none;
+      color: var(--text);
+      transition: transform .2s ease, border-color .2s ease, background .2s ease;
+    }
+
+    .quick-link:hover {
+      transform: translateY(-2px);
+      border-color: rgba(235, 235, 235, .28);
+      background: rgba(235, 235, 235, .1);
+    }
+
+    .quick-image {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      font-size: 10px;
+    }
+
+    .quick-label {
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    @media(max-width:980px) {
+
+      .hero-inner,
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media(max-width:620px) {
+      .hero-stats,
+      .news-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .news-label {
+        min-height: 44px;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+    }
+
+    .news-strip:hover .news-track {
+      animation-play-state: paused;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .news-track {
+        animation: none;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+
+<body class="footer-page-shell">
+<header class="topnav">
+    <a href="pages/home.html" class="logo">
+      <img src="assets/img/fighters-logo.png" alt="Anime Warriors III">
+      <span class="logo-text" style="display:none">Anime Rush</span>
+    </a>
+    <nav>
+      <a href="pages/home.html">Home</a>
+      <a href="pages/units.html">Units</a>
+      <a href="pages/gamemodes.html">Gamemodes</a>
+      <a href="pages/items.html">Items</a>
+      <a href="pages/guides.html">Guides</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div id="particles"></div>
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <div class="hero-kicker">Anime Rush Wiki</div>
+        <h1 class="hero-title">Anime<span> Rush</span></h1>
+        <p>A fast reference wiki for characters, performance, obtain methods, items, and combinations for the
+          simulator.</p>
+        <div class="hero-actions">
+          <a href="https://www.roblox.com/games/18923620224/Anime-Warriors-III" class="btn btn-cyan" target="_blank" rel="noopener noreferrer">Play Now</a>
+          <a href="pages/units.html" class="btn btn-outline">Ver Units</a>
+        </div>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-card"><span>Total units</span><strong id="stat-total-units">0</strong></div>
+        <div class="stat-card"><span>Coming Soon</span><strong>—</strong></div>
+        <div class="stat-card"><span>Coming Soon</span><strong>—</strong></div>
+        <div class="stat-card is-version"><span>Current version</span><strong id="stat-current-version">0.001v</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="page-content">
+    <main>
+
+      <section class="trailer-section reveal" aria-label="Trailer" style="margin-bottom:22px;">
+        <div class="sec-head" style="margin-bottom:14px;">
+          <h2>Trailer</h2>
+          <div class="line"></div><span class="badge">Official</span>
+        </div>
+        <div style="position:relative;padding-bottom:56.25%;height:0;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow-lg);">
+          <iframe
+            src="https://www.youtube.com/embed/TPVukbHBSqo"
+            title="Anime Warriors III Trailer"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            style="position:absolute;top:0;left:0;width:100%;height:100%;"
+          ></iframe>
+        </div>
+      </section>
+
+      <section class="news-strip reveal" aria-label="News">
+        <div class="news-label">News</div>
+        <div class="news-viewport">
+          <div class="news-track" id="news-track"></div>
+        </div>
+      </section>
+
+      <div class="sec-head reveal">
+        <h2>Navigation</h2>
+        <div class="line"></div><span class="badge">Main Information</span>
+      </div>
+      <div class="feature-grid">
+        <article class="feature-card reveal">
+          <h3>Units</h3>
+          <p>Check max damage, build recommendations, skins, and how to obtain each unit.</p>
+          <a href="pages/units.html">Open list</a>
+        </article>
+        <article class="feature-card reveal">
+          <h3>Items</h3>
+          <p>View items, accessories, and weapons saved in the database with their bonuses and obtain methods.</p>
+          <a href="pages/items.html">Open items</a>
+        </article>
+        <article class="feature-card reveal">
+          <h3>Guides</h3>
+          <p>Use the team builder and organize the strongest current combinations.</p>
+          <a href="pages/guides.html">Open guides</a>
+        </article>
+      </div>
+
+      <div class="sec-head reveal" style="margin-top:28px;">
+        <h2>UpdateLog</h2>
+        <div class="line"></div><span class="badge">Patch Notes</span>
+      </div>
+      <div class="updatelog-shell reveal" style="
+        max-height:340px;
+        overflow-y:auto;
+        border-radius:18px;
+        border:1px solid var(--line);
+        background:linear-gradient(180deg,rgba(11,24,39,.96),rgba(8,19,31,.96));
+        box-shadow:var(--shadow-md);
+        padding:20px 24px;
+        margin-bottom:22px;
+        overscroll-behavior:contain;
+      " id="updatelog-container">
+        <div style="display:grid;gap:18px;" id="updatelog-list">
+          <div class="updatelog-entry">
+            <div style="font-family:var(--font-display);font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;">v0.001 — Launch</div>
+            <ul style="margin:0;padding-left:18px;color:var(--muted);font-size:13px;line-height:1.7;">
+              <li>Wiki launched for Anime Rush.</li>
+              <li>Units database added.</li>
+              <li>Items and Guides sections available.</li>
+              <li>Gamemodes page added.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </main>
+<!-- Incio Da Barra Lateral -->
+    <aside class="sidebar">
+
+      <div class="side-block reveal">
+        <div class="side-block-head"><span class="led led-c"></span>Wiki Staff</div>
+        <div class="staff-list" id="wiki-staff"></div>
+      </div>
+
+      <div class="side-block reveal">
+        <div class="side-block-head"><span class="led led-g"></span>Quick Links</div>
+        <div class="quick-grid" id="quick-links"></div>
+      </div>
+
+      <div class="recent-card reveal">
+        <h3>New Units</h3>
+        <div class="recent-list" id="recent-units">
+          <div style="color:var(--muted)">Loading...</div>
+        </div>
+      </div>
+    </aside>
+  </div>
+<!-- Fim Da Barra Lateral -->
+
+  <footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="pages/home.html" aria-label="Anime Rush home"><img src="assets/img/fighters-logo.png" alt="Anime Rush" class="logo-img"></a>
+      <p>Community wiki for Anime Rush, maintained by players.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Wiki</h4>
+      <ul>
+        <li><a href="pages/home.html">Home</a></li>
+        <li><a href="pages/units.html">Units</a></li>
+        <li><a href="pages/items.html">Items</a></li>
+        <li><a href="pages/guides.html">Guides</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Content</h4>
+      <ul>
+        <li><a href="pages/gamemodes.html">Gamemodes</a></li>
+        <li><a href="admin/index.php" data-admin-only hidden>Admin panel</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Community</h4>
+      <ul><li><a href="https://discord.gg/HB2Kq8RtU3" target="_blank" rel="noopener noreferrer">Discord / Contact</a></li></ul>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="pages/privacy-policy.html">Privacy Policy</a></li>
+        <li><a href="pages/terms-of-service.html">Terms of Service</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Anime Rush</span>
+    <span>Community maintained</span>
+  </div>
+</footer>
+
+<script src="assets/js/shared.js?v=fd5"></script>
+  <script>
+    initParticles('particles', 14);
+
+    const NEWS_ITEMS = [
+      { label: 'INFO', text: 'Information Number 1!' },
+      { label: 'TO', text: 'Information Number 2!' },
+      { label: 'META', text: 'Information Number 3!' },
+      { label: 'WIKI', text: 'Information Number 4!' },
+      { label: 'NOVO', text: 'Information Number 5!' },
+    ];
+
+    // Podes usar varios aliases em discordLookup separados por "|" se o widget do Discord
+    // devolver um username diferente do esperado.
+    const WIKI_STAFF = [
+      { name: 'Netuga', role: 'Owner', image: '', discordLookup: 'Netuga'},
+      { name: 'davidestu', role: 'Owner', image: '', discordLookup: 'davidestu' },
+    ];
+
+    const QUICK_LINKS = [
+      { label: 'Discord', href: 'https://discord.gg/MdSQvVxTfC', image: '' },
+      { label: 'Game', href: 'https://www.roblox.com/games/18923620224/Anime-Warriors-III', image: '' },
+      { label: 'YouTube', href: 'https://www.youtube.com/@Enclamatic', image: '' },
+      { label: 'Group', href: 'https://www.roblox.com/communities/34783288/Arc-I-Warriors#!/about', image: '' },
+    ];
+
+    function safe(value) {
+      return typeof escapeHtml === 'function'
+        ? escapeHtml(value)
+        : String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+    }
+
+    function safeUrl(value) {
+      return safe(typeof safeAssetUrl === 'function' ? safeAssetUrl(value) : value);
+    }
+
+    function safeBg(value, fallback = 'linear-gradient(135deg,#2d171a,#5a1b22)') {
+      return typeof safeCssBackground === 'function'
+        ? safeCssBackground(value, fallback)
+        : String(value || fallback).replace(/[<>"'`;{}]/g, '') || fallback;
+    }
+
+    function initials(value) {
+      return String(value || '')
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(part => part[0])
+        .join('')
+        .toUpperCase() || 'FS';
+    }
+
+    function mediaHtml(src, alt, fallback) {
+      return src
+        ? `<img src="${safeUrl(src)}" alt="${safe(alt)}" loading="lazy">`
+        : `<span>${safe(fallback)}</span>`;
+    }
+
+    function staffDiscordLookupValue(member) {
+      if (Array.isArray(member.discordLookup)) {
+        return member.discordLookup.map(value => String(value || '').trim()).filter(Boolean).join('|');
+      }
+      return String(member.discordLookup || member.name || '').trim();
+    }
+
+    function parseDiscordLookupAliases(rawValue) {
+      return String(rawValue || '')
+        .split('|')
+        .map(value => value.trim())
+        .filter(Boolean);
+    }
+
+    function renderNews() {
+      const track = document.getElementById('news-track');
+      if (!track) return;
+      const items = [...NEWS_ITEMS, ...NEWS_ITEMS];
+      track.innerHTML = items.map(item => `
+        <span class="news-item"><strong>${safe(item.label)}:</strong> ${safe(item.text)}</span>
+      `).join('');
+    }
+
+    function renderStaff() {
+      const holder = document.getElementById('wiki-staff');
+      if (!holder) return;
+      holder.innerHTML = WIKI_STAFF.map(member => `
+        <div class="staff-member">
+          <div class="staff-avatar">${mediaHtml(member.image, member.name, initials(member.name))}</div>
+          <div>
+            <div class="staff-name">${safe(member.name)}</div>
+            <div class="staff-role">${safe(member.role)}</div>
+          </div>
+          <div class="staff-presence" data-discord-lookup="${safe(staffDiscordLookupValue(member))}">
+            <span class="staff-status is-unknown" aria-hidden="true"></span>
+            <span class="staff-status-label">Discord</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderQuickLinks() {
+      const holder = document.getElementById('quick-links');
+      if (!holder) return;
+      holder.innerHTML = QUICK_LINKS.map(link => `
+        <a class="quick-link" href="${safeUrl(link.href)}" data-link-label="${safe(link.label)}" ${/^https?:\/\//i.test(link.href) ? 'target="_blank" rel="noopener noreferrer"' : ''}>
+          <div class="quick-image">${mediaHtml(link.image, link.label, initials(link.label))}</div>
+          <span class="quick-label">${safe(link.label)}</span>
+        </a>
+      `).join('');
+    }
+
+    function setStaffPresence(node, status, label) {
+      const dot = node.querySelector('.staff-status');
+      const text = node.querySelector('.staff-status-label');
+      if (!dot || !text) return;
+
+      const stateClass = ['online', 'idle', 'dnd', 'offline', 'unknown', 'unavailable'].includes(status) ? status : 'offline';
+      dot.className = 'staff-status is-' + stateClass;
+      text.textContent = label;
+      node.title = 'Discord: ' + label;
+    }
+
+    async function loadStaffDiscordStatus() {
+      const nodes = Array.from(document.querySelectorAll('.staff-presence[data-discord-lookup]'));
+      if (!nodes.length) return;
+
+      const lookups = [...new Set(
+        nodes.flatMap(node => parseDiscordLookupAliases(node.dataset.discordLookup))
+      )];
+      if (!lookups.length) return;
+
+      const params = new URLSearchParams();
+      lookups.forEach(lookup => params.append('lookup', lookup));
+
+      try {
+        const res = await fetch(appPath('discord_status.php') + '?' + params.toString(), {
+          cache: 'no-store',
+        });
+        const data = await res.json();
+
+        nodes.forEach(node => {
+          const aliases = parseDiscordLookupAliases(node.dataset.discordLookup);
+          const info = aliases
+            .map(alias => data?.statuses?.[alias])
+            .find(entry => entry?.fornd)
+            || aliases.map(alias => data?.statuses?.[alias]).find(Boolean);
+          setStaffPresence(node, info?.status || 'unknown', info?.status_label || 'Unavailable');
+        });
+
+        const discordLink = document.querySelector('[data-link-label="Discord"]');
+        if (discordLink && data?.invite_url) {
+          discordLink.href = data.invite_url;
+          discordLink.target = '_blank';
+          discordLink.rel = 'noopener noreferrer';
+        }
+      } catch (error) {
+        nodes.forEach(node => setStaffPresence(node, 'unknown', 'Unavailable'));
+      }
+    }
+
+    function artHtml(unit) {
+      const image = unit.img_minimal || unit.img_card || unit.img || unit.img_ingame || '';
+      if (image) {
+        return `<img src="${safeUrl(image)}" alt="${safe(unit.name)}" loading="lazy">`;
+      }
+      return `<span style="font-family:var(--font-display);font-size:24px">${safe(unit.emoji || initials(unit.name))}</span>`;
+    }
+
+    function rarityValue(value) {
+      const normalized = String(value || 'rare').toLowerCase();
+      const aliases = {
+        secret: 'secreto',
+        mythical: 'myth',
+        mythic: 'myth',
+        legendary: 'legend',
+        common: 'rare',
+      };
+      const canonical = aliases[normalized] || normalized;
+      return ['secreto', 'myth', 'legend', 'epic', 'rare'].includes(canonical) ? canonical : 'rare';
+    }
+
+    function rarityLabel(value) {
+      return {
+        secreto: 'Secret',
+        myth: 'Mitico',
+        legend: 'Legendary',
+        epic: 'Epic',
+        rare: 'Rare'
+      }[rarityValue(value)] || rarityValue(value);
+    }
+
+    async function loadHomepageData() {
+      try {
+        const [statsRes, recentRes] = await Promise.all([
+          fetch('api/units.php?action=stats'),
+          fetch('api/units.php?action=recent&limit=4')
+        ]);
+
+        const stats = await statsRes.json();
+        const recent = await recentRes.json();
+
+        const total = Number(stats.total || 0);
+        const activePlayers = Number(stats.active_players || 0);
+        const totalVisits = Number(stats.total_visits || 0);
+
+        animCount(document.getElementById('stat-total-units'), total || 0, 1100);
+        animCount(document.getElementById('stat-active-players'), activePlayers || 0, 900);
+        animCount(document.getElementById('stat-total-visits'), totalVisits || 0, 950);
+        document.getElementById('stat-current-version').textContent = stats.version || '0.001v';
+
+        const holder = document.getElementById('recent-units');
+        if (!Array.isArray(recent) || !recent.length) {
+          holder.innerHTML = '<div style="color:var(--muted)">No recent records.</div>';
+          return;
+        }
+
+        holder.innerHTML = recent.map(unit => `
+      <a class="recent-unit" href="unit.php?id=${encodeURIComponent(unit.id)}">
+        <div class="recent-art" style="background:${safeBg(unit.bg)}">${artHtml(unit)}</div>
+        <div>
+          <span class="rarity-badge rb-${safe(rarityValue(unit.rarity))}">${safe(rarityLabel(unit.rarity))}</span>
+          <div class="recent-title">${safe(unit.name)}</div>
+          <div class="recent-copy">${safe(unit.description || 'New unit recently added')}</div>
+        </div>
+      </a>
+    `).join('');
+      } catch (error) {
+        document.getElementById('recent-units').innerHTML = '<div style="color:var(--muted)">Could not load data.</div>';
+      }
+    }
+
+    renderNews();
+    renderStaff();
+    renderQuickLinks();
+    loadStaffDiscordStatus();
+    loadHomepageData();
+
+    // UpdateLog: when scrolled to bottom, let the page continue scrolling
+    (function initUpdateLogScroll() {
+      const container = document.getElementById('updatelog-container');
+      if (!container) return;
+      container.addEventListener('wheel', function(e) {
+        const atBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - 2;
+        const atTop = container.scrollTop <= 0;
+        if ((e.deltaY > 0 && atBottom) || (e.deltaY < 0 && atTop)) {
+          e.preventDefault();
+          window.scrollBy({ top: e.deltaY, behavior: 'auto' });
+        }
+      }, { passive: false });
+    })();
+  </script>
+</body>
+
+</html>

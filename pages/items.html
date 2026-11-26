@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+  <base href="../">
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Items · Anime Rush</title>
+<link rel="stylesheet" href="assets/css/shared.css?v=sticky-footer-3"/>
+<style>
+.page-hero{
+  padding:56px 28px 42px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(135deg,#08121d,#120405);
+  border-bottom:1px solid var(--line);
+}
+.items-page .page-content .reveal,
+.items-page .page-content .reveal.visible{
+  filter:none;
+}
+.items-page .page-hero .banner-map-bg{
+  opacity:0.38;
+}
+.page-hero::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 50% 30%, rgba(255,107,115,.16), transparent 32%),
+    radial-gradient(circle at 24% 72%, rgba(235,235,235,.12), transparent 26%);
+  pointer-events:none;
+}
+.page-hero h1{
+  font-family:var(--font-display);
+  font-size:clamp(36px,6vw,62px);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.page-hero h1 span{color:var(--gold);}
+.page-hero p{
+  max-width:640px;
+  margin:10px auto 0;
+  color:var(--muted);
+}
+
+.tabs-wrap{display:grid;gap:18px;}
+.tab-nav{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  padding:8px;
+  border-radius:18px;
+  border:1px solid var(--line);
+  background:var(--card);
+}
+.tab-btn{
+  flex:1;
+  min-width:120px;
+  min-height:42px;
+  padding:0 14px;
+  border-radius:12px;
+  color:var(--muted);
+  font-family:var(--font-display);
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  transition:background .2s ease,color .2s ease,transform .2s ease;
+}
+.tab-btn:hover{background:rgba(255,255,255,.04);color:var(--text);}
+.tab-btn.active{
+  background:linear-gradient(135deg,var(--gold),var(--orange));
+  color:#081119;
+}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+.items-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:14px;
+}
+.items-list{
+  display:grid;
+  gap:14px;
+}
+.item-card,
+.calculator-card{
+  border-radius:20px;
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(11,24,39,.96),rgba(8,19,31,.96));
+  box-shadow:var(--shadow-md);
+}
+.item-card{
+  overflow:hidden;
+  transition:transform .2s ease,border-color .2s ease;
+}
+.item-card:hover{
+  transform:translateY(-2px);
+  border-color:var(--line-strong);
+}
+.item-art{
+  min-height:120px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+}
+.item-art::after{
+  content:'';
+  position:absolute;
+  inset:auto 0 0;
+  height:48px;
+  background:linear-gradient(180deg,transparent,rgba(8,19,31,.94));
+}
+.item-art img{
+  width:70%;
+  max-height:90px;
+  object-fit:contain;
+  position:relative;
+  z-index:1;
+}
+.item-fallback{
+  font-family:var(--font-display);
+  font-size:26px;
+  letter-spacing:.14em;
+  color:var(--text);
+  position:relative;
+  z-index:1;
+}
+.item-body{padding:16px;}
+.item-name{
+  font-family:var(--font-display);
+  font-size:18px;
+  letter-spacing:.04em;
+}
+.item-type,
+.mini-label{
+  margin-top:6px;
+  color:var(--muted);
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+.item-effect{
+  margin-top:10px;
+  color:var(--text);
+  font-size:12px;
+  line-height:1.7;
+}
+.item-acquire{
+  margin-top:12px;
+  padding:10px 12px;
+  border-radius:12px;
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--line);
+  color:var(--blue);
+  font-size:11px;
+}
+.bonus-list{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+.bonus-pill{
+  padding:5px 10px;
+  border-radius:999px;
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--line);
+  font-size:11px;
+}
+.bonus-pill.atk{color:var(--orange);}
+.bonus-pill.spd{color:var(--blue);}
+.bonus-pill.effect{color:var(--green);}
+.drop-rates-card{
+  position:relative;
+  overflow:hidden;
+  padding:16px;
+  display:grid;
+  gap:14px;
+  background:
+    radial-gradient(circle at 22% 24%, rgba(235,235,235,.1), transparent 30%),
+    linear-gradient(90deg, rgba(8,19,31,.96), rgba(8,24,39,.96));
+}
+.drop-rate-card::before{
+  content:'';
+  position:absolute;
+  top:18px;
+  right:20px;
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  border:1px solid rgba(168,232,255,.35);
+  background:radial-gradient(circle, rgba(168,232,255,.08), transparent 72%);
+}
+.drop-rates-copy{
+  max-width:220px;
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.65;
+}
+.drop-rate-list{
+  display:grid;
+  gap:10px;
+}
+.drop-rate-row{
+  display:grid;
+  grid-template-columns:78px minmax(0,1fr) auto;
+  gap:10px;
+  align-items:center;
+}
+.drop-rate-label{
+  font-size:11px;
+  font-weight:700;
+  color:var(--text);
+}
+.drop-rate-bar{
+  position:relative;
+  height:8px;
+  border-radius:999px;
+  background:rgba(255,255,255,.05);
+  overflow:hidden;
+}
+.drop-rate-fill{
+  height:100%;
+  min-width:0;
+  border-radius:999px;
+  background:linear-gradient(90deg, var(--drop-color), rgba(255,255,255,.92));
+  box-shadow:0 0 14px color-mix(in srgb, var(--drop-color) 42%, transparent);
+}
+.drop-rate-value{
+  min-width:44px;
+  text-align:right;
+  font-family:var(--font-display);
+  font-size:11px;
+  letter-spacing:.08em;
+  color:var(--drop-color);
+}
+.drop-rate-meta{
+  color:var(--soft);
+  font-size:10px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+@supports not (color: color-mix(in srgb, white 50%, black 50%)){
+  .drop-rate-fill{
+    box-shadow:none;
+  }
+}
+
+.item-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.empty-state{
+  padding:26px 18px;
+  border-radius:20px;
+  border:1px dashed var(--line-strong);
+  text-align:center;
+  color:var(--muted);
+  background:rgba(255,255,255,.02);
+}
+.empty-state strong{
+  display:block;
+  margin-bottom:6px;
+  color:var(--text);
+  font-family:var(--font-display);
+}
+
+.calculator-card{padding:22px;}
+.calc-title{
+  font-family:var(--font-display);
+  font-size:20px;
+  letter-spacing:.06em;
+  margin-bottom:6px;
+}
+.calc-copy{
+  color:var(--muted);
+  margin-bottom:18px;
+}
+.calc-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+}
+.calc-group label{
+  display:block;
+  margin-bottom:8px;
+  color:var(--muted);
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+.calc-input{
+  width:100%;
+  min-height:44px;
+  padding:0 14px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.03);
+  color:var(--text);
+  outline:none;
+}
+.calc-result-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+  margin-top:16px;
+}
+.calc-result{
+  padding:16px;
+  border-radius:16px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.03);
+}
+.calc-result strong{
+  display:block;
+  font-family:var(--font-display);
+  font-size:24px;
+  margin-top:4px;
+}
+
+.calc-result span{
+  color:var(--muted);
+  font-size:10px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+
+@media(max-width:760px){
+  .calc-grid,
+  .calc-result-grid{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+</head>
+<body class="items-page footer-page-shell">
+<header class="topnav">
+  <a href="pages/home.html" class="logo">
+    <img src="assets/img/fighters-logo.png" alt="Anime Rush">
+    <span class="logo-text" style="display:none">Anime Rush</span>
+  </a>
+  <nav>
+    <a href="pages/home.html">Home</a>
+    <a href="pages/units.html">Units</a>
+    <a href="pages/gamemodes.html">Gamemodes</a>
+    <a href="pages/items.html">Items</a>
+    <a href="pages/guides.html">Guides</a>
+  </nav>
+</header>
+
+<section class="page-hero">
+  <div class="banner-map-bg" aria-hidden="true"></div>
+  <div class="banner-map-frame" aria-hidden="true"></div>
+  <h1>Items <span>& Enhancements</span></h1>
+  <p>Browse effects, bonuses, and obtain methods for items, accessories, and weapons used in the simulator.</p>
+</section>
+
+<div class="page-content">
+<main>
+  <div class="tabs-wrap reveal">
+    <div class="tab-nav">
+      <button class="tab-btn active" type="button" data-tab="tab-items">Items</button>
+      <button class="tab-btn" type="button" data-tab="tab-accessories">Accessories</button>
+      <button class="tab-btn" type="button" data-tab="tab-weapons">Weapons</button>
+    </div>
+
+    <section class="tab-panel active" id="tab-items">
+      <div class="sec-head reveal"><h2>Items</h2><div class="line"></div><span class="badge" id="cnt-items">...</span></div>
+      <div class="items-grid" id="items-grid-bd"></div>
+    </section>
+
+    <section class="tab-panel" id="tab-accessories">
+      <div class="sec-head reveal"><h2>Accessories</h2><div class="line"></div><span class="badge" id="cnt-accessories">...</span></div>
+      <div class="items-grid" id="accessories-grid-bd"></div>
+    </section>
+
+    <section class="tab-panel" id="tab-weapons">
+      <div class="sec-head reveal"><h2>Weapons</h2><div class="line"></div><span class="badge" id="cnt-weapons">...</span></div>
+      <div class="items-grid" id="weapons-grid-bd"></div>
+    </section>
+
+  </div>
+</main>
+
+<aside class="sidebar">
+  <div class="side-block reveal">
+    <div class="side-block-head"><span class="led led-g"></span>Quick Read</div>
+    <div style="padding:16px;display:grid;gap:12px">
+      <div style="padding:14px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.03)">
+        <div class="mini-label">Items</div>
+        <strong id="side-items" style="display:block;margin-top:6px;font-family:var(--font-display);font-size:28px">0</strong>
+      </div>
+      <div style="padding:14px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.03)">
+        <div class="mini-label">Accessories</div>
+        <strong id="side-accessories" style="display:block;margin-top:6px;font-family:var(--font-display);font-size:28px">0</strong>
+      </div>
+      <div style="padding:14px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.03)">
+        <div class="mini-label">Weapons</div>
+        <strong id="side-weapons" style="display:block;margin-top:6px;font-family:var(--font-display);font-size:28px">0</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="side-block reveal">
+    <div class="side-block-head"><span class="led led-p"></span>Drop Rates</div>
+    <div class="drop-rates-card">
+      <div class="drop-rates-copy">Visual summary of the rarity distribution for gears saved in the current database.</div>
+      <div class="drop-rate-list" id="item-rarity-rates"></div>
+      <div class="drop-rate-meta">Updated with database gears</div>
+    </div>
+  </div>
+
+  <div class="side-block reveal">
+    <div class="side-block-head"><span class="led led-c"></span>Notes</div>
+    <div style="padding:16px;color:var(--muted);display:grid;gap:10px">
+      <p>The bonuses shown on this page are loaded from the database.</p>
+      <p>The "how to obtain" field appears whenever information is registered in the admin panel.</p>
+      <p>If the list is empty, that table does not have saved content yet.</p>
+    </div>
+  </div>
+</aside>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="pages/home.html" aria-label="Anime Rush home"><img src="assets/img/fighters-logo.png" alt="Anime Rush" class="logo-img"></a>
+      <p>Community wiki for Anime Rush, maintained by players.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Wiki</h4>
+      <ul>
+        <li><a href="pages/home.html">Home</a></li>
+        <li><a href="pages/units.html">Units</a></li>
+        <li><a href="pages/items.html">Items</a></li>
+        <li><a href="pages/guides.html">Guides</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Content</h4>
+      <ul>
+        <li><a href="pages/gamemodes.html">Gamemodes</a></li>
+        <li><a href="admin/index.php" data-admin-only hidden>Admin panel</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Community</h4>
+      <ul><li><a href="https://discord.gg/HB2Kq8RtU3" target="_blank" rel="noopener noreferrer">Discord / Contact</a></li></ul>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="pages/privacy-policy.html">Privacy Policy</a></li>
+        <li><a href="pages/terms-of-service.html">Terms of Service</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Anime Rush</span>
+    <span>Community maintained</span>
+  </div>
+</footer>
+
+<script src="assets/js/shared.js?v=fd5"></script>
+<script>
+const RAR_LABELS = {
+  secreto: 'Secret',
+  myth: 'Mythical',
+  legend: 'Legendary',
+  epic: 'Epic',
+  rare: 'Rare',
+  common: 'Common',
+  exclusive: 'Exclusive'
+};
+const DEFAULT_CARD_BG = 'linear-gradient(135deg,#2d171a,#5a1b22)';
+const ALLOWED_RARITIES = ['secreto', 'myth', 'legend', 'epic', 'rare', 'common', 'exclusive'];
+
+function safe(value) {
+  return typeof escapeHtml === 'function' ? escapeHtml(value) : String(value ?? '');
+}
+
+function safeUrl(value) {
+  return safe(typeof safeAssetUrl === 'function' ? safeAssetUrl(value) : value);
+}
+
+function safeBg(value, fallback = DEFAULT_CARD_BG) {
+  return typeof safeCssBackground === 'function'
+    ? safeCssBackground(value, fallback)
+    : String(value || fallback).replace(/[<>"'`;{}]/g, '') || fallback;
+}
+
+function iconHtml(entry, size = '72%') {
+  if (entry.img) {
+    return `<img src="${safeUrl(entry.img)}" alt="${safe(entry.name || '')}" style="width:${safe(size)};height:${safe(size)};object-fit:contain" loading="lazy">`;
+  }
+  return `<span class="item-fallback">${safe(entry.emoji || String(entry.name || '?').slice(0, 2).toUpperCase())}</span>`;
+}
+
+function emptyState(title, copy) {
+  return `<div class="empty-state"><strong>${safe(title)}</strong>${safe(copy)}</div>`;
+}
+
+function acquireBlock(text) {
+  return text ? `<div class="item-acquire">${safe(text)}</div>` : '';
+}
+
+function normalizeRarity(value) {
+  const normalized = String(value || 'rare').toLowerCase();
+  return ALLOWED_RARITIES.includes(normalized) ? normalized : 'rare';
+}
+
+function renderItemRarityRates(items) {
+  const holder = document.getElementById('item-rarity-rates');
+  if (!holder) return;
+
+  const order = ['secreto', 'myth', 'legend', 'epic', 'rare'];
+  const colors = {
+    secreto: '#62d2d8',
+    myth: '#c06d91',
+    legend: '#d7bf62',
+    epic: '#9fb0e8',
+    rare: '#f1f1f1'
+  };
+
+  if (!Array.isArray(items) || !items.length) {
+    holder.innerHTML = `<div class="drop-rates-copy">Not enough gears to calculate the distribution.</div>`;
+    return;
+  }
+
+  const counts = order.reduce((acc, key) => ({ ...acc, [key]: 0 }), {});
+  items.forEach(item => {
+    const key = normalizeRarity(item.rarity);
+    if (Object.prototype.hasOwnProperty.call(counts, key)) counts[key] += 1;
+  });
+
+  const total = items.length;
+  holder.innerHTML = order.map(key => {
+    const count = counts[key];
+    const percent = total ? (count / total) * 100 : 0;
+    const width = count > 0 ? Math.max(percent, 7) : 0;
+    const percentLabel = percent.toLocaleString('en-US', {
+      minimumFractionDigits: percent > 0 && percent < 10 ? 1 : 0,
+      maximumFractionDigits: 1
+    });
+
+    return `
+      <div class="drop-rate-row" style="--drop-color:${colors[key]}">
+        <span class="drop-rate-label">${RAR_LABELS[key] || key}</span>
+        <div class="drop-rate-bar">
+          <div class="drop-rate-fill" style="width:${width}%"></div>
+        </div>
+        <span class="drop-rate-value">${percentLabel}%</span>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderBonuses(entry, includeSpeed = false) {
+  const pills = [];
+  if (Number(entry.dmg_bonus) > 0) pills.push(`<span class="bonus-pill atk">+${safe(entry.dmg_bonus)}% ATK</span>`);
+  if (includeSpeed && Number(entry.spd_bonus) > 0) pills.push(`<span class="bonus-pill spd">+${safe(entry.spd_bonus)}% SPD</span>`);
+  if (entry.effect) pills.push(`<span class="bonus-pill effect">${safe(entry.effect)}</span>`);
+  return pills.length ? `<div class="bonus-list">${pills.join('')}</div>` : '';
+}
+
+async function loadItems() {
+  const grid = document.getElementById('items-grid-bd');
+  const counter = document.getElementById('cnt-items');
+
+  try {
+    const res = await fetch('api/catalog.php?action=list&type=item');
+    const items = await res.json();
+    if (!Array.isArray(items) || !items.length) {
+      grid.innerHTML = emptyState('No gears registered', 'Add items in the admin panel so they appear here.');
+      counter.textContent = '0';
+      document.getElementById('side-items').textContent = '0';
+      renderItemRarityRates([]);
+      return;
+    }
+
+    counter.textContent = `${items.length} gears`;
+    document.getElementById('side-items').textContent = items.length;
+    renderItemRarityRates(items);
+    grid.innerHTML = items.map(item => `
+      <article class="item-card reveal">
+        <div class="item-art" style="background:${safeBg(item.bg)}">
+          ${iconHtml(item)}
+        </div>
+        <div class="item-body">
+          <div class="item-top">
+            <div>
+              <span class="rarity-badge rb-${normalizeRarity(item.rarity)}">${RAR_LABELS[normalizeRarity(item.rarity)] || normalizeRarity(item.rarity)}</span>
+              <div class="item-name">${safe(item.name)}</div>
+              ${item.type ? `<div class="item-type">${safe(item.type)}</div>` : ''}
+            </div>
+          </div>
+          ${item.description ? `<div class="item-effect">${safe(item.description)}</div>` : ''}
+          ${renderBonuses(item, true)}
+          ${acquireBlock(item.obtain_method)}
+        </div>
+      </article>
+    `).join('');
+  } catch (error) {
+    grid.innerHTML = emptyState('Error loading gears', 'Check the server connection or database configuration.');
+    counter.textContent = 'erro';
+    document.getElementById('side-items').textContent = '-';
+    renderItemRarityRates([]);
+  }
+}
+
+function makeItemCard(entry) {
+  const rar = normalizeRarity(entry.rarity);
+  return `
+    <article class="item-card reveal">
+      <div class="item-art" style="background:${safeBg(entry.bg)}">
+        ${iconHtml(entry)}
+      </div>
+      <div class="item-body">
+        <div class="item-top">
+          <div>
+            <span class="rarity-badge rb-${rar}">${RAR_LABELS[rar] || rar}</span>
+            <div class="item-name">${safe(entry.name)}</div>
+            ${entry.type ? `<div class="item-type">${safe(entry.type)}</div>` : ''}
+          </div>
+        </div>
+        ${entry.description ? `<div class="item-effect">${safe(entry.description)}</div>` : ''}
+        ${renderBonuses(entry, true)}
+        ${acquireBlock(entry.obtain_method)}
+      </div>
+    </article>
+  `;
+}
+
+async function loadCategory(apiType, gridId, countId, sideId, emptyTitle, emptyMsg) {
+  const grid = document.getElementById(gridId);
+  const counter = document.getElementById(countId);
+  const side = sideId ? document.getElementById(sideId) : null;
+  try {
+    const res = await fetch(`api/catalog.php?action=list&type=${apiType}`);
+    const items = await res.json();
+    if (!Array.isArray(items) || !items.length) {
+      grid.innerHTML = emptyState(emptyTitle, emptyMsg);
+      if (counter) counter.textContent = '0';
+      if (side) side.textContent = '0';
+      if (apiType === 'item') renderItemRarityRates([]);
+      return;
+    }
+    if (counter) counter.textContent = `${items.length} ${apiType}s`;
+    if (side) side.textContent = items.length;
+    if (apiType === 'item') renderItemRarityRates(items);
+    grid.innerHTML = items.map(makeItemCard).join('');
+  } catch (e) {
+    grid.innerHTML = emptyState('Error loading ' + apiType + 's', 'Check server connection.');
+    if (counter) counter.textContent = 'error';
+    if (side) side.textContent = '-';
+  }
+}
+
+function initTabs() {
+  const buttons = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.tab-panel');
+  buttons.forEach(button => {
+    button.addEventListener('click', () => {
+      buttons.forEach(e => e.classList.toggle('active', e === button));
+      panels.forEach(p => p.classList.toggle('active', p.id === button.dataset.tab));
+    });
+  });
+}
+
+initTabs();
+loadCategory('item',      'items-grid-bd',       'cnt-items',       'side-items',       'No items registered',       'Add items in the admin panel.');
+loadCategory('accessory', 'accessories-grid-bd', 'cnt-accessories', 'side-accessories', 'No accessories registered', 'Add accessories in the admin panel.');
+loadCategory('weapon',    'weapons-grid-bd',     'cnt-weapons',     'side-weapons',     'No weapons registered',     'Add weapons in the admin panel.');
+</script>
+</body>
+</html>
+

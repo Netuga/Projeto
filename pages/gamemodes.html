@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+  <base href="../">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Modes - Anime Rush</title>
+<link rel="stylesheet" href="assets/css/shared.css?v=sticky-footer-3">
+<link rel="stylesheet" href="assets/css/mode-browser.css?v=org2">
+<style>
+.page-hero{
+  position:relative;
+  overflow:hidden;
+  padding:58px 28px 36px;
+  border-bottom:1px solid var(--line);
+  background:
+    radial-gradient(circle at 18% 26%, rgba(235,235,235,.16), transparent 24%),
+    radial-gradient(circle at 82% 22%, rgba(196,24,37,.16), transparent 22%),
+    linear-gradient(135deg,#070f1a,#120405);
+}
+.hero-inner{
+  position:relative;
+  z-index:1;
+  max-width:1560px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 380px;
+  gap:22px;
+  align-items:end;
+}
+.hero-copy{
+  padding:28px;
+  border-radius:26px;
+  border:1px solid var(--line);
+  background:rgba(7,18,30,.64);
+  backdrop-filter:blur(14px);
+  box-shadow:var(--shadow-lg);
+}
+.hero-kicker{
+  color:var(--orange);
+  font-family:var(--font-display);
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+}
+.hero-copy h1{
+  margin-top:12px;
+  font-family:var(--font-display);
+  font-size:clamp(38px,6vw,72px);
+  line-height:.95;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.hero-copy h1 span{color:var(--orange);}
+.hero-copy p{
+  max-width:760px;
+  margin-top:14px;
+  color:var(--muted);
+  font-size:14px;
+}
+.hero-actions{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:22px;
+}
+.hero-spotlight{
+  position:relative;
+  display:grid;
+  gap:14px;
+  padding:22px;
+  border-radius:26px;
+  border:1px solid var(--line);
+  background:
+    radial-gradient(circle at top, rgba(235,235,235,.12), transparent 44%),
+    linear-gradient(180deg,rgba(10,24,39,.96),rgba(8,19,31,.98));
+  box-shadow:var(--shadow-md);
+  overflow:hidden;
+  cursor:pointer;
+}
+.hero-spotlight::after{
+  content:'';
+  position:absolute;
+  inset:auto -10% -34% auto;
+  width:240px;
+  height:240px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(196,24,37,.16), transparent 68%);
+}
+.hero-spotlight-top,
+.hero-spotlight-copy,
+.hero-spotlight-art{
+  position:relative;
+  z-index:1;
+}
+.hero-spotlight-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.hero-spotlight-top span{
+  color:var(--muted);
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+.hero-spotlight-art{
+  min-height:208px;
+  padding:18px;
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.08);
+  background:
+    linear-gradient(180deg,rgba(4,10,18,.22),rgba(4,10,18,.72)),
+    linear-gradient(135deg,#b20d19,#2d171a);
+  background-position:center;
+  background-repeat:no-repeat;
+  background-size:cover;
+  display:flex;
+  align-items:flex-end;
+}
+.hero-spotlight-badge{
+  display:inline-flex;
+  align-items:center;
+  min-height:24px;
+  padding:0 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(5,11,18,.66);
+  color:var(--sky);
+  font-family:var(--font-display);
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.hero-spotlight-name{
+  margin-top:6px;
+  font-family:var(--font-display);
+  font-size:24px;
+  line-height:1.05;
+}
+.hero-spotlight-copy p{
+  margin-top:8px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.65;
+}
+.overview-strip{
+  max-width:1560px;
+  margin:22px auto 0;
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:14px;
+}
+.overview-card{
+  padding:16px 18px;
+  border-radius:18px;
+  border:1px solid var(--line);
+  background:rgba(7,18,30,.62);
+  backdrop-filter:blur(12px);
+}
+.overview-card span{
+  color:var(--muted);
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+.overview-card strong{
+  display:block;
+  margin-top:8px;
+  font-family:var(--font-display);
+  font-size:28px;
+}
+.tabs-wrap{display:grid;gap:20px;}
+.tab-nav{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  padding:8px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:var(--card);
+}
+.tab-btn{
+  flex:1;
+  min-width:120px;
+  min-height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:0 14px;
+  border-radius:12px;
+  color:var(--muted);
+  font-family:var(--font-display);
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  transition:background .2s ease,color .2s ease,transform .2s ease;
+}
+.tab-btn:hover{background:rgba(255,255,255,.04);color:var(--text);}
+.tab-btn.active{
+  color:#081119;
+  background:linear-gradient(135deg,var(--blue),var(--orange));
+}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+.mode-spotlight{
+  padding:18px 20px;
+  border-radius:22px;
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(11,24,39,.96),rgba(8,19,31,.96));
+  box-shadow:var(--shadow-md);
+}
+.mode-spotlight-eyebrow{
+  color:var(--orange);
+  font-family:var(--font-display);
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+.mode-spotlight h3{
+  margin-top:8px;
+  font-family:var(--font-display);
+  font-size:24px;
+  line-height:1.15;
+}
+.mode-spotlight p{
+  margin-top:10px;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.7;
+}
+.sidebar-note{
+  padding:16px;
+  color:var(--muted);
+  display:grid;
+  gap:10px;
+}
+@media(max-width:1080px){
+  .hero-inner,
+  .overview-strip{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+</head>
+<body class="footer-page-shell">
+<header class="topnav">
+  <a href="pages/home.html" class="logo">
+    <img src="assets/img/fighters-logo.png" alt="Anime Rush">
+    <span class="logo-text" style="display:none">ANIME RUSH</span>
+  </a>
+  <nav>
+    <a href="pages/home.html">Home</a>
+    <a href="pages/units.html">Units</a>
+    <a href="pages/gamemodes.html" class="active">Gamemodes</a>
+    <a href="pages/items.html">Items</a>
+    <a href="pages/guides.html">Guides</a>
+  </nav>
+</header>
+
+<section class="page-hero">
+  <div class="banner-map-bg" aria-hidden="true"></div>
+  <div class="banner-map-frame" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <div class="hero-kicker">Mode Browser</div>
+      <h1>Game <span>Modes</span></h1>
+      <p>This page only shows modes created in the admin panel. Each entry can include an image, rewards, and custom notes.</p>
+      <div class="hero-actions">
+        <a href="pages/gamemodes.html#tab-story" class="btn btn-outline" onclick="document.querySelector('[data-tab=&quot;tab-story&quot;]').click();return false;">View World</a>
+        <a href="pages/gamemodes.html#tab-event" class="btn btn-outline" onclick="document.querySelector('[data-tab=&quot;tab-event&quot;]').click();return false;">View events</a>
+      </div>
+    </div>
+
+    <div class="hero-spotlight" id="mode-latest-card" tabindex="0" role="button">
+      <div class="hero-spotlight-top">
+        <span>Latest event / story</span>
+        <span class="hero-spotlight-badge" id="mode-latest-type">No data</span>
+      </div>
+      <div class="hero-spotlight-art" id="mode-latest-art"></div>
+      <div class="hero-spotlight-copy">
+        <span class="hero-spotlight-badge" id="mode-latest-badge">Admin</span>
+        <div class="hero-spotlight-name" id="mode-latest-name">No mode created yet</div>
+        <p id="mode-latest-copy">Create a story or event in the admin panel to show it here.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="overview-strip">
+    <div class="overview-card"><span>World</span><strong id="overview-story">0</strong></div>
+    <div class="overview-card"><span>Gauntlet</span><strong id="overview-infinite">0</strong></div>
+    <div class="overview-card"><span>Portals</span><strong id="overview-raid">0</strong></div>
+    <div class="overview-card"><span>Events</span><strong id="overview-event">0</strong></div>
+  </div>
+</section>
+
+<div class="page-content">
+  <main>
+    <div class="tabs-wrap reveal">
+      <div class="tab-nav">
+        <button class="tab-btn active" data-tab="tab-story" type="button">World</button>
+        <button class="tab-btn" data-tab="tab-infinite" type="button">Gauntlet</button>
+        <button class="tab-btn" data-tab="tab-raid" type="button">Portals</button>
+        <button class="tab-btn" data-tab="tab-event" type="button">Events</button>
+      </div>
+
+      <div class="tab-panel active" id="tab-story">
+        <section class="mode-spotlight reveal">
+          <div class="mode-spotlight-copy">
+            <div class="mode-spotlight-eyebrow">World</div>
+            <h3>This category only shows blocks created in the admin panel</h3>
+            <p>If this section has no content yet, create the entries in admin first so they can appear here.</p>
+          </div>
+        </section>
+        <div class="mode-browser reveal" data-mode-browser="story" data-sync-hash="false"></div>
+      </div>
+
+      <div class="tab-panel" id="tab-infinite">
+        <section class="mode-spotlight reveal">
+          <div class="mode-spotlight-copy">
+            <div class="mode-spotlight-eyebrow">Gauntlet</div>
+            <h3>Only shows stages configured in admin</h3>
+            <p>You can create as many infinite blocks as you want and they will appear here in the order set in the panel.</p>
+          </div>
+        </section>
+        <div class="mode-browser reveal" data-mode-browser="infinite" data-sync-hash="false"></div>
+      </div>
+
+      <div class="tab-panel" id="tab-raid">
+        <section class="mode-spotlight reveal">
+          <div class="mode-spotlight-copy">
+            <div class="mode-spotlight-eyebrow">Portals</div>
+            <h3>Visible raids on this page now come only from the database</h3>
+            <p>With no entries created in the admin panel, this category is intentionally empty.</p>
+          </div>
+        </section>
+        <div class="mode-browser reveal" data-mode-browser="raid" data-sync-hash="false"></div>
+      </div>
+
+      <div class="tab-panel" id="tab-event">
+        <section class="mode-spotlight reveal">
+          <div class="mode-spotlight-copy">
+            <div class="mode-spotlight-eyebrow">Events</div>
+            <h3>Page events are only the ones you create in admin</h3>
+            <p>The preview, image, rewards, and notes are connected to the content saved in the panel.</p>
+          </div>
+        </section>
+        <div class="mode-browser reveal" data-mode-browser="event" data-sync-hash="false"></div>
+      </div>
+    </div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="side-block reveal" data-admin-only>
+      <div class="side-block-head"><span class="led led-p"></span>Recommended Mode</div>
+      <div class="sidebar-note">
+        <p>Choose the mode you want to feature in the admin panel.</p>
+        <p>This page automatically highlights the latest story or event added.</p>
+      </div>
+    </div>
+
+    <div class="side-block reveal" data-admin-only>
+      <div class="side-block-head"><span class="led led-g"></span>Farm Routine</div>
+      <div class="sidebar-note">
+        <p>1. Complete daily quests</p>
+        <p>2. Run the weekly raid</p>
+        <p>3. Clear the best available story chapter</p>
+        <p>4. Push a few infinite waves for extra materials</p>
+      </div>
+    </div>
+
+
+  </aside>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="pages/home.html" aria-label="Anime Rush home"><img src="assets/img/fighters-logo.png" alt="Anime Rush" class="logo-img"></a>
+      <p>Community wiki for Anime Rush, maintained by players.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Wiki</h4>
+      <ul>
+        <li><a href="pages/home.html">Home</a></li>
+        <li><a href="pages/units.html">Units</a></li>
+        <li><a href="pages/items.html">Items</a></li>
+        <li><a href="pages/guides.html">Guides</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Content</h4>
+      <ul>
+        <li><a href="pages/gamemodes.html">Gamemodes</a></li>
+        <li><a href="admin/index.php" data-admin-only hidden>Admin panel</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Community</h4>
+      <ul><li><a href="https://discord.gg/HB2Kq8RtU3" target="_blank" rel="noopener noreferrer">Discord / Contact</a></li></ul>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="pages/privacy-policy.html">Privacy Policy</a></li>
+        <li><a href="pages/terms-of-service.html">Terms of Service</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Anime Rush</span>
+    <span>Community maintained</span>
+  </div>
+</footer>
+
+<script>window.APP_BASE = '';</script>
+<script src="assets/js/shared.js?v=fd5"></script>
+<script src="assets/js/mode-browser.js?v=org3"></script>
+<script>
+function initTabs() {
+  document.querySelectorAll('.tabs-wrap').forEach((wrap) => {
+    const buttons = Array.from(wrap.querySelectorAll('.tab-btn'));
+    const panels = Array.from(wrap.querySelectorAll('.tab-panel'));
+    if (!buttons.length || !panels.length) return;
+
+    const activateTab = (tabId, updateHash) => {
+      buttons.forEach((button) => {
+        button.classList.toggle('active', button.dataset.tab === tabId);
+      });
+      panels.forEach((panel) => {
+        panel.classList.toggle('active', panel.id === tabId);
+      });
+      if (updateHash) {
+        window.history.replaceState(null, '', `#${tabId}`);
+      }
+    };
+
+    const initialHash = window.location.hash.replace('#', '');
+    const initialTab = buttons.some((button) => button.dataset.tab === initialHash)
+      ? initialHash
+      : buttons[0].dataset.tab;
+
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => activateTab(button.dataset.tab, true));
+    });
+
+    activateTab(initialTab, false);
+  });
+}
+
+function safe(value) {
+  return typeof escapeHtml === 'function'
+    ? escapeHtml(value)
+    : String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+}
+
+function resolveModeImage(path) {
+  const value = typeof safeAssetUrl === 'function' ? safeAssetUrl(path) : String(path || '').trim();
+  if (!value) return '';
+  return value;
+}
+
+function cssUrl(value) {
+  const image = resolveModeImage(value);
+  if (!image) return '';
+  const encoded = encodeURI(image).replace(/[()'"]/g, char => `%${char.charCodeAt(0).toString(16).toUpperCase()}`);
+  return `url("${encoded}")`;
+}
+
+function safeBg(value, fallback = 'linear-gradient(135deg,#b20d19,#2d171a)') {
+  return typeof safeCssBackground === 'function'
+    ? safeCssBackground(value, fallback)
+    : String(value || fallback).replace(/[<>"'`;{}]/g, '') || fallback;
+}
+
+function latestBackground(mode) {
+  const gradient = safeBg(mode?.gradient);
+  const image = cssUrl(mode?.bgImage || mode?.bg_image || '');
+  return image
+    ? `linear-gradient(180deg,rgba(4,10,18,.2),rgba(4,10,18,.72)), ${image}, ${gradient}`
+    : gradient;
+}
+
+function setLatestEmptyState() {
+  document.getElementById('overview-story').textContent = '0';
+  document.getElementById('overview-infinite').textContent = '0';
+  document.getElementById('overview-raid').textContent = '0';
+  document.getElementById('overview-event').textContent = '0';
+  document.getElementById('mode-latest-type').textContent = 'No data';
+  document.getElementById('mode-latest-badge').textContent = 'Admin';
+  document.getElementById('mode-latest-name').textContent = 'No mode created yet';
+  document.getElementById('mode-latest-copy').textContent = 'Create a story or event in the admin panel to show it here.';
+  document.getElementById('mode-latest-art').style.background = 'linear-gradient(135deg,#163252,#0b1724)';
+  document.getElementById('mode-latest-art').innerHTML = '<span class="hero-spotlight-badge">No entries</span>';
+  document.getElementById('mode-latest-card').onclick = null;
+  document.getElementById('mode-latest-card').onkeydown = null;
+}
+
+async function loadModeOverview() {
+  try {
+    const [listRes, latestRes] = await Promise.all([
+      fetch('api/gamemodes.php?action=list'),
+      fetch('api/gamemodes.php?action=overview')
+    ]);
+
+    const payload = await listRes.json();
+    const latest = await latestRes.json();
+
+    document.getElementById('overview-story').textContent = payload?.story?.items?.length || 0;
+    document.getElementById('overview-infinite').textContent = payload?.infinite?.items?.length || 0;
+    document.getElementById('overview-raid').textContent = payload?.raid?.items?.length || 0;
+    document.getElementById('overview-event').textContent = payload?.event?.items?.length || 0;
+
+    if (!latest) {
+      setLatestEmptyState();
+      return;
+    }
+
+    document.getElementById('mode-latest-type').textContent = latest.modeKey === 'event' ? 'Event' : 'Story';
+    document.getElementById('mode-latest-badge').textContent = latest.badge || modeTypeLabel(latest.modeKey || 'story');
+    document.getElementById('mode-latest-name').textContent = latest.previewTitle || latest.label || 'New mode';
+    document.getElementById('mode-latest-copy').textContent = latest.previewText || 'The latest mode added will appear here with an image and quick summary.';
+    document.getElementById('mode-latest-art').style.background = latestBackground(latest);
+    document.getElementById('mode-latest-art').innerHTML = `<span class="hero-spotlight-badge">${safe(latest.label || latest.previewTitle || 'Entry')}</span>`;
+    document.getElementById('mode-latest-card').onclick = () => {
+      const tabId = latest.modeKey === 'event' ? 'tab-event' : 'tab-story';
+      document.querySelector(`[data-tab="${tabId}"]`)?.click();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    document.getElementById('mode-latest-card').onkeydown = (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        document.getElementById('mode-latest-card').click();
+      }
+    };
+  } catch (error) {
+    setLatestEmptyState();
+  }
+}
+
+function modeTypeLabel(value) {
+  return { story: 'World', infinite: 'Gauntlet', raid: 'Portals', event: 'Event' }[value] || 'World';
+}
+
+initTabs();
+loadModeOverview();
+</script>
+</body>
+</html>
+

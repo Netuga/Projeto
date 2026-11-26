@@ -1,0 +1,1843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+  <base href="../">
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Units - Anime Rush</title>
+<link rel="stylesheet" href="assets/css/shared.css?v=sticky-footer-3"/>
+<style>
+.units-page .page-content{
+  max-width:1560px;
+  grid-template-columns:minmax(0,1fr) 350px;
+  gap:22px;
+}
+
+/* A página usa o scroll do navegador, sem uma lista com scroll próprio. */
+html{overflow-y:scroll;}
+.units-page{overflow-y:auto;}
+
+.units-page .modal{
+  backdrop-filter:none;
+}
+
+.units-page .page-content .reveal,
+.units-page .page-content .reveal.visible{
+  filter:none;
+}
+
+.units-page .page-hero .banner-map-bg{
+  opacity:0.38;
+}
+
+.page-hero{
+  position:relative;
+  overflow:hidden;
+  padding:60px 28px 34px;
+  border-bottom:1px solid var(--line);
+  background:
+    radial-gradient(circle at 22% 36%, rgba(235,235,235,.18), transparent 26%),
+    radial-gradient(circle at 80% 28%, rgba(196,24,37,.16), transparent 24%),
+    linear-gradient(135deg,#08131f,#120405);
+}
+.page-hero::after{
+  content:'';
+  position:absolute;
+  inset:auto 0 0;
+  height:110px;
+  background:linear-gradient(180deg,transparent,rgba(4,11,20,.65));
+}
+.hero-inner{
+  position:relative;
+  z-index:1;
+  max-width:1560px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 420px;
+  gap:22px;
+  align-items:end;
+}
+.hero-copy{
+  padding:28px;
+  border-radius:26px;
+  border:1px solid var(--line);
+  background:rgba(7,18,30,.64);
+  backdrop-filter:blur(14px);
+  box-shadow:var(--shadow-lg);
+}
+.hero-kicker{
+  color:var(--blue);
+  font-family:var(--font-display);
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+}
+.hero-copy h1{
+  margin-top:12px;
+  font-family:var(--font-display);
+  font-size:clamp(38px,6vw,72px);
+  line-height:.95;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.hero-copy p{
+  max-width:760px;
+  margin-top:14px;
+  color:var(--muted);
+  font-size:14px;
+}
+.hero-actions{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:22px;
+}
+.hero-spotlight{
+  position:relative;
+  min-height:100%;
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+  gap:14px;
+  padding:22px;
+  border-radius:26px;
+  border:1px solid var(--line);
+  background:
+    radial-gradient(circle at top, rgba(235,235,235,.12), transparent 44%),
+    linear-gradient(180deg,rgba(10,24,39,.96),rgba(8,19,31,.98));
+  box-shadow:var(--shadow-md);
+  overflow:hidden;
+  cursor:pointer;
+}
+.hero-spotlight::after{
+  content:'';
+  position:absolute;
+  inset:auto -10% -34% auto;
+  width:240px;
+  height:240px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(196,24,37,.16), transparent 68%);
+}
+.hero-spotlight-top{
+  position:relative;
+  z-index:1;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.hero-spotlight-top span{
+  color:var(--muted);
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+.hero-spotlight-art{
+  position:relative;
+  z-index:1;
+  min-height:228px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:24px;
+  padding:18px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.06);
+  overflow:hidden;
+}
+.hero-spotlight-art img{
+  width:100%;
+  max-width:240px;
+  max-height:220px;
+  object-fit:contain;
+  transform:scale(1.06);
+  filter:drop-shadow(0 18px 32px rgba(0,0,0,.36));
+}
+.hero-spotlight-art .fallback{
+  font-size:86px;
+}
+.art-media{
+  position:relative;
+  z-index:1;
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.element-badge{
+  position:absolute;
+  top:10px;
+  left:6px;
+  width:18px;
+  height:18px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.16);
+  background:rgba(5,11,18,.9);
+  box-shadow:0 12px 24px rgba(0,0,0,.28);
+  overflow:hidden;
+  z-index:2;
+}
+.element-badge-compact{
+  position:absolute;
+  top:10px;
+  left:5px;
+  width:15px;
+  height:15px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.16);
+  background:rgba(5,11,18,.9);
+  box-shadow:0 12px 24px rgba(0,0,0,.28);
+  overflow:hidden;
+  z-index:2;
+}
+.element-badge img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.element-badge-fallback{
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:var(--font-display);
+  font-size:10px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.element-badge-count{
+  position:absolute;
+  right:-4px;
+  bottom:-4px;
+  min-width:18px;
+  min-height:18px;
+  padding:0 4px;
+  border-radius:999px;
+  background:var(--orange);
+  color:#081119;
+  font-family:var(--font-display);
+  font-size:8px;
+  font-weight:700;
+  letter-spacing:.08em;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.hero-spotlight-art .element-badge,
+.modal-art .element-badge{
+  width:40px;
+  height:40px;
+}
+.unit-card .element-badge{
+  top:10px;
+  left:10px;
+  width:30px;
+  height:30px;
+  border-radius:12px;
+  border-color:rgba(255,255,255,.22);
+  background:rgba(5,11,18,.88);
+  box-shadow:0 14px 24px rgba(0,0,0,.32);
+}
+.unit-card .element-badge-fallback{
+  font-size:9px;
+}
+.unit-card .element-badge-count{
+  right:-5px;
+  bottom:-5px;
+  min-width:18px;
+  min-height:18px;
+  font-size:7px;
+}
+.tier-avatar .element-badge,
+.recent-art .element-badge{
+  width:36px;
+  height:36px;
+  border-radius:12px;
+  top:8px;
+  right:8px;
+}
+.tier-avatar .element-badge-fallback,
+.recent-art .element-badge-fallback{
+  font-size:10px;
+}
+.tier-avatar .element-badge-count,
+.recent-art .element-badge-count{
+  min-width:18px;
+  min-height:18px;
+  font-size:8px;
+}
+.hero-spotlight-copy{
+  position:relative;
+  z-index:1;
+}
+.hero-spotlight-name{
+  margin-top:6px;
+  font-family:var(--font-display);
+  font-size:30px;
+  line-height:1;
+}
+.hero-spotlight-copy p{
+  margin-top:8px;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.overview-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+  margin-bottom:18px;
+}
+.overview-card{
+  padding:16px 18px;
+  border-radius:20px;
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(11,24,39,.96),rgba(8,19,31,.96));
+  box-shadow:var(--shadow-md);
+}
+.overview-card span{
+  display:block;
+  color:var(--muted);
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+.overview-card strong{
+  display:block;
+  margin-top:8px;
+  font-family:var(--font-display);
+  font-size:28px;
+}
+
+.filter-wrap{
+  display:grid;
+  gap:14px;
+}
+.filter-bar{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:14px;
+  padding:18px;
+  border-radius:22px;
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(11,24,39,.96),rgba(8,19,31,.96));
+  box-shadow:var(--shadow-md);
+}
+.rarity-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.filter-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  min-height:40px;
+  padding:0 14px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.025);
+  color:var(--muted);
+  font-family:var(--font-display);
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  transition:transform .2s ease,border-color .2s ease,color .2s ease,background .2s ease;
+}
+.filter-pill:hover{
+  transform:translateY(-1px);
+  color:var(--text);
+  border-color:var(--line-strong);
+}
+.filter-pill.active{
+  color:#071018;
+  background:linear-gradient(135deg,var(--sky),var(--orange));
+  border-color:transparent;
+}
+.filter-pill-count{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:22px;
+  min-height:22px;
+  padding:0 6px;
+  border-radius:999px;
+  background:rgba(0,0,0,.18);
+  font-size:9px;
+}
+.filter-pill.active .filter-pill-count{
+  background:rgba(7,16,24,.16);
+}
+.filter-search{
+  width:100%;
+  min-height:46px;
+  padding:0 14px;
+  border-radius:14px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.03);
+  color:var(--text);
+  outline:none;
+}
+
+.section-tools{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.view-toggle{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:4px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.03);
+}
+.view-toggle button{
+  min-height:30px;
+  padding:0 11px;
+  border-radius:999px;
+  color:var(--muted);
+  font-family:var(--font-display);
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  transition:background .2s ease,color .2s ease,box-shadow .2s ease;
+}
+.view-toggle button.active{
+  color:#071018;
+  background:linear-gradient(135deg,var(--sky),var(--orange));
+  box-shadow:0 10px 22px rgba(196,24,37,.16);
+}
+
+.tier-board{
+  display:grid;
+  gap:10px;
+  margin-bottom:18px;
+}
+.tier-row{
+  display:grid;
+  grid-template-columns:84px minmax(0,1fr);
+  gap:10px;
+  align-items:stretch;
+}
+.tier-label{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:20px;
+  font-family:var(--font-display);
+  font-size:30px;
+  font-weight:700;
+  letter-spacing:.1em;
+}
+.tier-label.s{background:linear-gradient(135deg,#ffcc8b,#ff8c42);color:#081018;}
+.tier-label.a{background:linear-gradient(135deg,#ffe8a4,#ffd56b);color:#081018;}
+.tier-label.b{background:linear-gradient(135deg,#94d9ff,#4fb2ff);color:#081018;}
+.tier-label.c{background:linear-gradient(135deg,#8ec8ff,#6f87ff);color:#081018;}
+.tier-label.d{background:linear-gradient(135deg,#8598ab,#6d7b8a);color:#081018;}
+.tier-track{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  padding:12px;
+  border-radius:20px;
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(11,24,39,.96),rgba(8,19,31,.96));
+  box-shadow:var(--shadow-md);
+}
+.tier-unit{
+  width:92px;
+  display:grid;
+  gap:6px;
+  cursor:pointer;
+}
+.tier-avatar{
+  position:relative;
+  width:92px;
+  height:92px;
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+}
+.tier-avatar img{
+  width:90%;
+  max-height:78px;
+  object-fit:contain;
+  transform:scale(1.06);
+}
+.tier-name{
+  color:var(--muted);
+  font-size:11px;
+  text-align:center;
+  line-height:1.35;
+}
+
+.unit-scroll-shell{
+  padding:2px 0;
+}
+.unit-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:14px;
+}
+.rarity-collections{
+  display:grid;
+  gap:12px;
+}
+.rarity-group{
+  --rarity-gradient:linear-gradient(135deg,#607d8b,#334650,#607d8b);
+  --rarity-color:#c5d4da;
+  --rarity-rgb:197 212 218;
+}
+.rarity-group[data-rarity-group="secreto"]{
+  --rarity-gradient:linear-gradient(135deg,#ff0000,#5a1313,#ff0000);
+  --rarity-color:#ff5555;
+  --rarity-rgb:255 0 0;
+}
+.rarity-group[data-rarity-group="myth"]{
+  --rarity-gradient:linear-gradient(90deg,#ff2300,#ffc800,#46ff3c,#00dcff,#505aff,#ff46e6);
+  --rarity-color:#00dcff;
+  --rarity-rgb:0 220 255;
+}
+.rarity-group[data-rarity-group="legend"]{
+  --rarity-gradient:linear-gradient(135deg,#ffcb0e 10%,#da7604,#ffcb0e 80%);
+  --rarity-color:#ffcb0e;
+  --rarity-rgb:255 203 14;
+}
+.rarity-group[data-rarity-group="epic"]{
+  --rarity-gradient:linear-gradient(135deg,#990aff,#4c279a,#990aff);
+  --rarity-color:#b364ff;
+  --rarity-rgb:153 10 255;
+}
+.rarity-group[data-rarity-group="rare"]{
+  --rarity-gradient:linear-gradient(135deg,#0095ff,#193ceb,#0095ff);
+  --rarity-color:#3aacff;
+  --rarity-rgb:0 149 255;
+}
+
+.rarity-collapsible{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:8px 16px;
+  border:3px solid transparent;
+  border-radius:10px;
+  color:var(--text);
+  background-image:
+    url("https://static.wikitide.net/animeexpeditionswiki/4/48/Unit_List_Stylized_Overlay.png"),
+    linear-gradient(180deg,rgba(0,0,0,.92),rgba(0,0,0,.73)),
+    var(--rarity-gradient);
+  background-clip:padding-box,padding-box,border-box;
+  background-blend-mode:overlay,normal,normal;
+  background-size:cover,cover,102%;
+  background-position:0 0,0 0,-3px 0;
+  box-shadow:0 0 0 3px inset rgb(var(--rarity-rgb) / 7%),var(--shadow-md);
+  text-align:left;
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+.rarity-collapsible:hover,
+.rarity-collapsible:focus-visible{
+  transform:translateY(-1px);
+  outline:none;
+  box-shadow:0 0 0 3px inset rgb(var(--rarity-rgb) / 12%),0 0 0 2px rgb(var(--rarity-rgb) / .55),var(--shadow-md);
+}
+.rarity-collapsible-title{
+  flex:1;
+  min-width:0;
+  font-family:var(--font-display);
+  font-size:clamp(18px,2vw,24px);
+  font-weight:700;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  background:var(--rarity-gradient);
+  background-clip:text;
+  -webkit-background-clip:text;
+  color:transparent;
+  -webkit-text-fill-color:transparent;
+}
+.rarity-collapsible-count{
+  padding:3px 9px;
+  border-radius:999px;
+  border:1px solid rgb(var(--rarity-rgb) / .45);
+  color:var(--rarity-color);
+  background:rgb(var(--rarity-rgb) / .1);
+  font-family:var(--font-display);
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+.rarity-collapsible-icon{
+  width:22px;
+  color:var(--rarity-color);
+  font-size:20px;
+  line-height:1;
+  text-align:center;
+  transition:transform .2s ease;
+}
+.rarity-group.is-open .rarity-collapsible-icon{transform:rotate(180deg);}
+.rarity-units{
+  display:none;
+  padding:14px 2px 4px;
+}
+.rarity-group.is-open .rarity-units{display:block;}
+.rarity-empty{
+  padding:16px;
+  border:1px dashed rgb(var(--rarity-rgb) / .45);
+  border-radius:16px;
+  color:var(--muted);
+  text-align:center;
+}
+.unit-card{
+  --rarity-color:var(--blue);
+  --rarity-soft:rgba(235,235,235,.08);
+  --rarity-line:rgba(235,235,235,.24);
+  --rarity-bg:var(--rarity-soft);
+  border-radius:24px;
+  border:1px solid var(--rarity-line);
+  overflow:hidden;
+  background:linear-gradient(180deg,var(--rarity-bg),rgba(8,19,31,.98) 46%,rgba(8,19,31,.98));
+  box-shadow:var(--shadow-md);
+  transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease;
+}
+.unit-card.rarity-rare{--rarity-color:#46688f;--rarity-soft:rgba(26,42,108,.1);--rarity-line:rgba(74,111,157,.22);--rarity-bg:linear-gradient(135deg,rgba(26,42,108,.27),rgba(44,62,80,.18));}
+.unit-card.rarity-epic{--rarity-color:#7c8ec7;--rarity-soft:rgba(168,192,255,.08);--rarity-line:rgba(168,192,255,.23);--rarity-bg:linear-gradient(135deg,rgba(63,43,150,.27),rgba(114,134,200,.11));}
+.unit-card.rarity-legend{--rarity-color:#b9982f;--rarity-soft:rgba(255,215,0,.08);--rarity-line:rgba(255,215,0,.22);--rarity-bg:linear-gradient(135deg,rgba(138,98,9,.27),rgba(202,169,29,.11),rgba(241,230,184,.05));}
+.unit-card.rarity-myth{--rarity-color:#b63472;--rarity-soft:rgba(255,0,127,.08);--rarity-line:rgba(255,0,127,.21);--rarity-bg:linear-gradient(135deg,rgba(93,11,103,.27),rgba(181,22,105,.12),rgba(214,155,25,.05));}
+.unit-card.rarity-secreto{--rarity-color:#319caf;--rarity-soft:rgba(79,172,254,.08);--rarity-line:rgba(56,189,210,.21);--rarity-bg:linear-gradient(120deg,rgba(6,174,184,.12),rgba(50,126,203,.1),rgba(92,20,184,.12));}
+.unit-card:hover{
+  transform:translateY(-3px);
+  border-color:var(--rarity-color);
+  box-shadow:0 18px 42px rgba(0,0,0,.34),0 0 0 1px var(--rarity-line);
+}
+.unit-card.is-latest{
+  border-color:var(--rarity-line);
+  box-shadow:var(--shadow-md);
+}
+.unit-art{
+  position:relative;
+  min-height:168px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+  overflow:hidden;
+  box-shadow:inset 0 0 0 1px var(--rarity-line);
+}
+.unit-art::before{
+  content:'';
+  position:absolute;
+  width:180px;
+  height:180px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.14),transparent 66%);
+  opacity:.5;
+}
+.unit-art::after{
+  content:'';
+  position:absolute;
+  inset:auto 0 0;
+  height:66px;
+  background:linear-gradient(180deg,transparent,rgba(8,19,31,.98));
+}
+.unit-potherit{
+  position:relative;
+  z-index:1;
+  width:118px;
+  height:118px;
+  border-radius:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(8,19,31,.18);
+  border:1px solid var(--rarity-line);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 14px 26px rgba(0,0,0,.2);
+  transform-origin:center bottom;
+  transition:transform .32s ease, box-shadow .32s ease, border-color .32s ease;
+}
+.unit-potherit img{
+  width:96%;
+  max-height:108px;
+  object-fit:contain;
+  transform:scale(1.12);
+  transform-origin:center bottom;
+  transition:transform .32s ease, filter .32s ease;
+  will-change:transform;
+}
+.unit-card:hover .unit-potherit{
+  transform:translateY(-7px);
+  border-color:var(--rarity-color);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 18px 34px rgba(0,0,0,.28),0 0 22px var(--rarity-line);
+}
+.unit-card:hover .unit-potherit img{
+  transform:scale(1.16);
+  filter:drop-shadow(0 12px 18px rgba(0,0,0,.28));
+  animation:unitPotheritSway 5.2s ease-in-ort infinite;
+}
+@keyframes unitPotheritSway{
+  0%,100%{transform:scale(1.16) rotate(0deg) translateX(0);}
+  25%{transform:scale(1.16) rotate(4deg) translateX(2px);}
+  75%{transform:scale(1.16) rotate(-4deg) translateX(-2px);}
+}
+@media (prefers-reduced-motion: reduce){
+  .unit-potherit,
+  .unit-potherit img{
+    transition:none;
+  }
+  .unit-card:hover .unit-potherit img{
+    animation:none;
+  }
+}
+.fallback{
+  font-family:var(--font-display);
+  font-size:42px;
+  letter-spacing:.12em;
+}
+.unit-body{padding:16px;}
+.unit-top{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:flex-start;
+}
+.unit-name{
+  font-family:var(--font-display);
+  font-size:20px;
+  line-height:1.05;
+}
+.unit-type{
+  margin-top:7px;
+  color:var(--muted);
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+.tier-chip{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:34px;
+  min-height:34px;
+  padding:0 10px;
+  border-radius:999px;
+  border:1px solid var(--rarity-line);
+  background:var(--rarity-soft);
+  color:var(--rarity-color);
+  font-family:var(--font-display);
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.12em;
+  white-space:nowrap;
+}
+.unit-badges,
+.unit-category-list{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+.unit-category-list{
+  margin-top:10px;
+}
+.unit-tag{
+  display:inline-flex;
+  align-items:center;
+  min-height:24px;
+  padding:0 9px;
+  border-radius:999px;
+  border:1px solid var(--rarity-line);
+  background:var(--rarity-soft);
+  color:var(--rarity-color);
+  font-family:var(--font-display);
+  font-size:8px;
+  font-weight:700;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.unit-tag.meta{
+  color:var(--gold);
+  border-color:rgba(255,107,115,.28);
+  background:rgba(255,107,115,.1);
+}
+.unit-tag.new{
+  color:var(--green);
+  border-color:rgba(107,230,176,.24);
+  background:rgba(107,230,176,.08);
+}
+.unit-stats{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:10px;
+  margin-top:16px;
+}
+.unit-stat{
+  min-width:0;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:12px;
+  padding:11px 10px;
+  border-radius:16px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.03);
+}
+.unit-stat span{
+  display:block;
+  min-width:0;
+  color:var(--muted);
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+.unit-stat strong{
+  display:block;
+  min-width:0;
+  margin-top:0;
+  font-family:var(--font-display);
+  font-size:clamp(13px,1.15vw,17px);
+  line-height:1.15;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+  text-align:right;
+  justify-self:end;
+}
+.unit-note{
+  margin-top:14px;
+  padding:12px 13px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.05);
+  background:rgba(255,255,255,.02);
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.65;
+}
+.unit-actions{
+  margin-top:12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.unit-open-link{
+  display:inline-flex;
+  align-items:center;
+  min-height:28px;
+  padding:0 10px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  color:var(--blue);
+  text-decoration:none;
+  font-family:var(--font-display);
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.latest-chip{
+  display:inline-flex;
+  align-items:center;
+  min-height:24px;
+  padding:0 9px;
+  border-radius:999px;
+  border:1px solid rgba(255,107,115,.24);
+  color:var(--gold);
+  font-family:var(--font-display);
+  font-size:8px;
+  font-weight:700;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.unit-grid.compact-view{
+  grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+  gap:10px;
+}
+.unit-grid.compact-view .unit-card{
+  border-radius:18px;
+}
+.unit-grid.compact-view .unit-card .element-badge{
+  top:7px;
+  left:7px;
+  width:17px;
+  height:17px;
+  border-radius:999px;
+}
+.unit-grid.compact-view .unit-card .element-badge-fallback{
+  font-size:7px;
+}
+.unit-grid.compact-view .unit-card .element-badge-count{
+  right:-4px;
+  bottom:-4px;
+  min-width:14px;
+  min-height:14px;
+  font-size:6px;
+  padding:0 3px;
+}
+.unit-grid.compact-view .unit-art{
+  min-height:112px;
+  padding:10px;
+}
+.unit-grid.compact-view .unit-art::before{
+  width:112px;
+  height:112px;
+}
+.unit-grid.compact-view .unit-potherit{
+  width:76px;
+  height:76px;
+  border-radius:18px;
+}
+.unit-grid.compact-view .unit-potherit img{
+  max-height:70px;
+}
+.unit-grid.compact-view .unit-body{
+  padding:11px;
+}
+.unit-grid.compact-view .unit-name{
+  font-size:15px;
+}
+.unit-grid.compact-view .unit-type,
+.unit-grid.compact-view .unit-note{
+  display:none;
+}
+.unit-grid.compact-view .unit-badges,
+.unit-grid.compact-view .unit-category-list,
+.unit-grid.compact-view .unit-stats,
+.unit-grid.compact-view .unit-actions{
+  display:none;
+}
+.unit-grid.compact-view .unit-card:not(.tier-high) .tier-chip{
+  display:none;
+}
+.unit-grid.compact-view .unit-top{
+  align-items:center;
+}
+.unit-grid.compact-view .tier-chip{
+  min-width:28px;
+  min-height:28px;
+  font-size:9px;
+}
+
+.rarity-grid{
+  display:grid;
+  gap:10px;
+}
+.rarity-card{
+  padding:14px;
+  border-radius:18px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.03);
+}
+.rarity-card-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+.rarity-card-head strong{
+  font-family:var(--font-display);
+  font-size:13px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.rarity-card .rarity-badge{
+  color:#071018 !important;
+  text-shadow:none;
+  box-shadow:0 8px 18px rgba(0,0,0,.14);
+}
+.rarity-card .rb-secreto{background:linear-gradient(135deg,#ff0000,#5a1313,#ff0000);}
+.rarity-card .rb-myth{background:linear-gradient(90deg,#ff2300,#ffc800,#46ff3c,#00dcff,#505aff,#ff46e6);}
+.rarity-card .rb-legend{background:linear-gradient(135deg,#ffcb0e 10%,#da7604,#ffcb0e 80%);}
+.rarity-card .rb-epic{background:linear-gradient(135deg,#990aff,#4c279a,#990aff);}
+.rarity-card .rb-rare{background:linear-gradient(135deg,#0095ff,#193ceb,#0095ff);}
+.rarity-card-head span{
+  color:var(--muted);
+  font-size:12px;
+}
+
+.brand-credit{
+  display:grid;
+  justify-items:center;
+  gap:14px;
+  padding:26px 22px;
+  border-radius:28px;
+  border:1px solid var(--line);
+  background:
+    radial-gradient(circle at top, rgba(235,235,235,.12), transparent 42%),
+    linear-gradient(180deg,rgba(11,24,39,.96),rgba(8,19,31,.96));
+  box-shadow:var(--shadow-md);
+  text-align:center;
+}
+.brand-credit img{
+  height:86px;
+  width:auto;
+  filter:drop-shadow(0 12px 28px rgba(196,24,37,.22));
+}
+.brand-credit p{
+  color:var(--muted);
+  font-size:14px;
+}
+
+.quick-links{
+  display:grid;
+  gap:10px;
+}
+.quick-links a{
+  text-decoration:none;
+}
+
+.recent-list{
+  display:grid;
+  gap:12px;
+}
+.recent-unit{
+  display:grid;
+  grid-template-columns:66px minmax(0,1fr);
+  gap:12px;
+  align-items:center;
+  padding:12px;
+  border-radius:18px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.03);
+  color:inherit;
+  text-decoration:none;
+}
+.recent-art{
+  position:relative;
+  width:66px;
+  height:66px;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+.recent-art img{
+  width:84%;
+  max-height:56px;
+  object-fit:contain;
+  transform:scale(1.08);
+}
+.recent-title{
+  font-family:var(--font-display);
+  font-size:16px;
+}
+.recent-copy{
+  margin-top:6px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.modal{
+  position:fixed;
+  inset:0;
+  z-index:900;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:rgba(0,0,0,.72);
+}
+.modal.open{display:flex;}
+.modal-box{
+  width:min(960px,100%);
+  border-radius:26px;
+  overflow:hidden;
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(11,24,39,.98),rgba(8,19,31,.98));
+  box-shadow:var(--shadow-lg);
+}
+.modal-head{
+  display:grid;
+  grid-template-columns:140px minmax(0,1fr) auto;
+  gap:18px;
+  padding:24px;
+  align-items:center;
+  border-bottom:1px solid var(--line);
+}
+.modal-art{
+  position:relative;
+  width:140px;
+  height:140px;
+  border-radius:26px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+.modal-art img{
+  width:86%;
+  max-height:114px;
+  object-fit:contain;
+  transform:scale(1.08);
+}
+.modal-title{
+  font-family:var(--font-display);
+  font-size:30px;
+}
+.modal-copy{
+  margin-top:12px;
+  color:var(--muted);
+}
+.modal-close{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.03);
+}
+.modal-body{
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:18px;
+  padding:24px;
+}
+.modal-panel{
+  padding:18px;
+  border-radius:20px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.03);
+}
+.modal-panel h3{
+  font-family:var(--font-display);
+  font-size:14px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.modal-panel-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  margin-top:14px;
+}
+.modal-mini{
+  min-width:0;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:12px;
+  padding:13px 12px;
+  border-radius:16px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.03);
+}
+.modal-mini span{
+  display:block;
+  min-width:0;
+  color:var(--muted);
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+.modal-mini strong{
+  display:block;
+  min-width:0;
+  margin-top:0;
+  font-family:var(--font-display);
+  font-size:clamp(14px,1.3vw,18px);
+  line-height:1.15;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+  text-align:right;
+  justify-self:end;
+}
+.empty-state{
+  padding:22px;
+  border-radius:22px;
+  border:1px dashed var(--line-strong);
+  color:var(--muted);
+  text-align:center;
+}
+
+@media(max-width:1080px){
+  .hero-inner,
+  .units-page .page-content{
+    grid-template-columns:1fr;
+  }
+}
+@media(max-width:860px){
+  .overview-grid,
+  .rarity-grid,
+  .filter-bar,
+  .modal-body,
+  .modal-head{
+    grid-template-columns:1fr;
+  }
+  .tier-row{
+    grid-template-columns:1fr;
+  }
+}
+@media(max-width:640px){
+  .unit-grid,
+  .modal-panel-grid,
+  .unit-stats{
+    grid-template-columns:1fr;
+  }
+  .rarity-collapsible{
+    gap:9px;
+    padding:10px 12px;
+  }
+  .rarity-collapsible-count{font-size:8px;}
+}
+</style>
+</head>
+<body class="units-page footer-page-shell">
+<header class="topnav">
+  <a href="pages/home.html" class="logo">
+    <img src="assets/img/fighters-logo.png" alt="Anime Rush">
+    <span class="logo-text" style="display:none">Anime Rush</span>
+  </a>
+  <nav>
+    <a href="pages/home.html">Home</a>
+    <a href="pages/units.html">Units</a>
+    <a href="pages/gamemodes.html">Gamemodes</a>
+    <a href="pages/items.html">Items</a>
+    <a href="pages/guides.html">Guides</a>
+  </nav>
+  <div class="nav-context">
+    <a href="admin/index.php?module=units" class="nav-context-link is-cta" id="nav-admin-link" hidden data-admin-only>Add Unit</a>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="banner-map-bg" aria-hidden="true"></div>
+  <div class="banner-map-frame" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <div class="hero-kicker">Simulator Database</div>
+      <h1>Units List</h1>
+      <p>Explore simulator characters with stats, passives, damage, tier, and obtain methods.</p>
+      <div class="hero-actions">
+        <a href="admin/index.php?module=units" class="btn btn-cyan" hidden data-admin-only>Add Unit</a>
+      </div>
+    </div>
+
+    <div class="hero-spotlight" id="hero-latest-card" role="link" tabindex="0">
+      <div class="hero-spotlight-top">
+        <span>Most Recent</span>
+        <span class="rarity-badge rb-rare" id="hero-latest-rarity">Rare</span>
+      </div>
+      <div class="hero-spotlight-art" id="hero-latest-art">
+        <span class="fallback">FS</span>
+      </div>
+      <div class="hero-spotlight-copy">
+        <div class="hero-spotlight-name" id="hero-latest-name">No recent unit</div>
+        <p id="hero-latest-copy">The latest character added will appear here with an image and quick summary.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="page-content">
+<main>
+  <div class="overview-grid reveal">
+    <div class="overview-card"><span>Total units</span><strong id="overview-total">0</strong></div>
+    <div class="overview-card"><span>Secrets</span><strong id="overview-high">0</strong></div>
+    <div class="overview-card"><span>Most Recent</span><strong id="overview-latest">-</strong></div>
+  </div>
+
+  <div class="sec-head reveal" style="margin-top:18px">
+    <h2>Units por raridade</h2>
+    <div class="line"></div>
+    <div class="section-tools">
+      <a href="admin/index.php?module=units" class="btn btn-pink btn-sm" hidden data-admin-only>Add Unit</a>
+      <div class="view-toggle" aria-label="Alternar vista das units">
+        <button class="active" type="button" data-view-mode="compact" aria-pressed="false">Compacta</button>
+        <button type="button" data-view-mode="detailed" aria-pressed="true">Detalhada</button>
+      </div>
+      <span class="badge" id="showing-count">...</span>
+    </div>
+  </div>
+
+  <div class="unit-scroll-shell">
+    <section class="rarity-collections" id="rarity-collections" aria-label="Units agrupadas por raridade"></section>
+  </div>
+
+</main>
+
+<aside class="sidebar">
+  <div class="side-block reveal">
+    <div class="side-block-head"><span class="led led-g"></span>Raritys</div>
+    <div style="padding:16px">
+      <div class="rarity-grid" id="rarity-grid"></div>
+    </div>
+  </div>
+
+  <div class="side-block reveal">
+    <div class="side-block-head"><span class="led led-c"></span>Recent</div>
+    <div style="padding:16px">
+      <div class="recent-list" id="recent-list"></div>
+    </div>
+  </div>
+
+  <div class="brand-credit reveal">
+    <img src="assets/img/fighters-logo.png" alt="Anime Rush">
+    <p>Developed by Afonso Neto and David Coelho.</p>
+  </div>
+</aside>
+</div>
+
+<div class="modal" id="unit-modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-art" id="modal-art"></div>
+      <div>
+        <div id="modal-rarity"></div>
+        <div class="modal-title" id="modal-title"></div>
+        <div class="modal-copy" id="modal-copy"></div>
+      </div>
+      <button class="modal-close" type="button" onclick="closeModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-panel">
+        <h3>Summary</h3>
+        <div class="modal-panel-grid" id="modal-core"></div>
+      </div>
+      <div class="modal-panel">
+        <h3>Passive and Obtain Method</h3>
+        <div id="modal-passive" style="margin-top:14px;color:var(--text);line-height:1.7"></div>
+        <div id="modal-obtain" style="margin-top:14px;color:var(--blue);line-height:1.7"></div>
+        <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+          <a class="btn btn-cyan btn-sm" id="modal-link" href="pages/units.html">Abrir ficha</a>
+          <a class="btn btn-outline btn-sm" href="admin/index.php?module=units" hidden data-admin-only>Panel admin</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="pages/home.html" aria-label="Anime Rush home"><img src="assets/img/fighters-logo.png" alt="Anime Rush" class="logo-img"></a>
+      <p>Community wiki for Anime Rush, maintained by players.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Wiki</h4>
+      <ul>
+        <li><a href="pages/home.html">Home</a></li>
+        <li><a href="pages/units.html">Units</a></li>
+        <li><a href="pages/items.html">Items</a></li>
+        <li><a href="pages/guides.html">Guides</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Content</h4>
+      <ul>
+        <li><a href="pages/gamemodes.html">Gamemodes</a></li>
+        <li><a href="admin/index.php?module=units" data-admin-only hidden>Admin panel</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Community</h4>
+      <ul><li><a href="https://discord.gg/HB2Kq8RtU3" target="_blank" rel="noopener noreferrer">Discord / Contact</a></li></ul>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="pages/privacy-policy.html">Privacy Policy</a></li>
+        <li><a href="pages/terms-of-service.html">Terms of Service</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Anime Rush</span>
+    <span>Community maintained</span>
+  </div>
+</footer>
+
+<script src="assets/js/shared.js?v=fd5"></script>
+<script>
+let ALL_UNITS = [];
+let activeRarity = 'all';
+const UNIT_MAP = {};
+let latestUnitId = null;
+let viewMode = 'compact';
+const DEFAULT_CARD_BG = 'linear-gradient(135deg,#2d171a,#5a1b22)';
+const ALLOWED_RARITIES = ['secreto', 'myth', 'legend', 'epic', 'rare'];
+const RARITY_GROUPS = [
+  ['secreto', 'Secret'],
+  ['myth', 'Mythical'],
+  ['legend', 'Legendary'],
+  ['epic', 'Epic'],
+  ['rare', 'Rare'],
+];
+const ALLOWED_TIERS = ['s', 'a', 'b', 'c', 'd', 'none'];
+const ELEMENT_LABELS = {
+  dark: 'Dark',
+  water: 'Water',
+  fire: 'Fire',
+  fighter: 'Fighter',
+  light: 'Light',
+  psychic: 'Psychic',
+  bug: 'Bug',
+  flying: 'Flying',
+  poison: 'Poison',
+  ghost: 'Ghost',
+  dragon: 'Dragon',
+  grass: 'Grass'
+};
+
+function rarityLabel(value) {
+  return {
+    secreto: 'Secret',
+    myth: 'Mythical',
+    legend: 'Legendary',
+    epic: 'Epic',
+    rare: 'Rare',
+  }[rarityValue(value)] || rarityValue(value);
+}
+
+function rarityValue(value) {
+  const normalized = String(value || 'rare').toLowerCase();
+  const aliases = {
+    secret: 'secreto',
+    mythical: 'myth',
+    mythic: 'myth',
+    legendary: 'legend',
+    common: 'rare',
+  };
+  const canonical = aliases[normalized] || normalized;
+  return ALLOWED_RARITIES.includes(canonical) ? canonical : 'rare';
+}
+
+function tierValue(value) {
+  const normalized = String(value || 'c').toLowerCase();
+  return ALLOWED_TIERS.includes(normalized) ? normalized : 'c';
+}
+
+function safe(value) {
+  return typeof escapeHtml === 'function' ? escapeHtml(value) : String(value ?? '');
+}
+
+function safeUrl(value) {
+  return safe(typeof safeAssetUrl === 'function' ? safeAssetUrl(value) : value);
+}
+
+function safeBg(value, fallback = DEFAULT_CARD_BG) {
+  return typeof safeCssBackground === 'function'
+    ? safeCssBackground(value, fallback)
+    : String(value || fallback).replace(/[<>"'`;{}]/g, '') || fallback;
+}
+
+function normalizeElementLabel(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+  const key = raw
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '');
+  return ELEMENT_LABELS[key] || raw;
+}
+
+function splitElements(value) {
+  if (Array.isArray(value)) {
+    return value.map(normalizeElementLabel).filter(Boolean);
+  }
+
+  const raw = String(value || '').trim();
+  if (!raw) return [];
+
+  if (raw.startsWith('[') && raw.endsWith(']')) {
+    try {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        return parsed.map(normalizeElementLabel).filter(Boolean);
+      }
+    } catch (error) {}
+  }
+
+  return raw
+    .split('/')
+    .map(normalizeElementLabel)
+    .filter(Boolean);
+}
+
+function unitElements(unit) {
+  return splitElements(unit.elements_json || unit.type || '');
+}
+
+function elementSummary(unit) {
+  const elements = unitElements(unit);
+  return elements.length ? elements.join(' / ') : 'No element';
+}
+
+function elementSlug(value) {
+  return String(value || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function elementIconPath(value) {
+  const slug = elementSlug(value);
+  return slug ? `assets/img/elements/${slug}.png` : '';
+}
+
+function renderUnitTags(unit) {
+  const tags = [];
+  if (Number(unit.is_meta || 0) === 1) tags.push('<span class="unit-tag meta">Meta</span>');
+  if (Number(unit.is_new || 0) === 1) tags.push('<span class="unit-tag new">New</span>');
+  return tags.join('');
+}
+
+function renderElementTags(unit) {
+  return unitElements(unit).map(element => `<span class="unit-tag">${safe(element)}</span>`).join('');
+}
+
+function renderElementBadge(unit) {
+  const elements = unitElements(unit);
+  const primary = elements[0];
+  if (!primary) return '';
+
+  return `
+    <div class="element-badge">
+      <img src="${safeUrl(elementIconPath(primary))}" alt="${safe(primary)}" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
+      <span class="element-badge-fallback" hidden>${safe(primary.slice(0, 2).toUpperCase())}</span>
+      ${elements.length > 1 ? `<span class="element-badge-count">+${elements.length - 1}</span>` : ''}
+    </div>
+  `;
+}
+
+  function unitImagePath(unit, variant = 'list') {
+    const variants = {
+      list: [unit.img_minimal, unit.img_card, unit.img_ingame, unit.img],
+      detail: [unit.img_minimal, unit.img_card, unit.img_ingame, unit.img],
+      ingame: [unit.img_minimal, unit.img_ingame, unit.img_card, unit.img],
+      card: [unit.img_minimal, unit.img_card, unit.img_ingame, unit.img]
+    };
+  const candidates = variants[variant] || variants.list;
+  return candidates.find(value => String(value || '').trim()) || '';
+}
+
+function unitArt(unit, variant = 'list', showElement = true) {
+  const art = unitImagePath(unit, variant);
+  return `
+    <div class="art-media">
+      ${art
+        ? `<img src="${safeUrl(art)}" alt="${safe(unit.name)}" loading="lazy">`
+        : `<span class="fallback">${safe(unit.emoji || String(unit.name || 'FS').slice(0, 2).toUpperCase())}</span>`}
+      ${showElement ? renderElementBadge(unit) : ''}
+    </div>
+  `;
+}
+
+function parseUltMultiplier(value) {
+  const match = String(value || '').replace(',', '.').match(/(\d+(?:\.\d+)?)/);
+  return match ? Number(match[1]) : null;
+}
+
+function resolveUltDamage(unit) {
+  const atk = Number(unit.atk || 0);
+  const multiplier = parseUltMultiplier(unit.ult_multiplier);
+  if (multiplier) {
+    return Math.floor(atk * multiplier);
+  }
+
+  const rawDamage = String(unit.ult_damage || '').trim();
+  if (!rawDamage) return null;
+
+  const percentMatch = rawDamage.replace(',', '.').match(/(\d+(?:\.\d+)?)\s*%/);
+  if (percentMatch) {
+    return Math.floor(atk * (Number(percentMatch[1]) / 100));
+  }
+
+  const numeric = Number.parseFloat(rawDamage.replace(',', '.').replace(/[^0-9.]/g, ''));
+  return Number.isNaN(numeric) ? null : Math.floor(numeric);
+}
+
+function formatStatNumber(value) {
+  return Number(value || 0).toLocaleString('en-US').replace(/[\u00A0\u202F]/g, ' ');
+}
+
+function formatUltDamage(unit) {
+  const value = resolveUltDamage(unit);
+  return value === null ? 'N/D' : formatStatNumber(value);
+}
+
+function renderTierRows(units) {
+  const rows = ['s', 'a', 'b', 'c', 'd'];
+  const holder = document.getElementById('tier-list');
+  if (!holder) return;
+  holder.innerHTML = rows.map(tier => {
+    const tierUnits = units.filter(unit => String(unit.tier || '').toLowerCase() === tier);
+    return `
+      <div class="tier-row">
+        <div class="tier-label ${tier}">${tier.toUpperCase()}</div>
+        <div class="tier-track">
+          ${tierUnits.length ? tierUnits.map(unit => `
+            <div class="tier-unit" data-unit-id="${safe(unit.id)}">
+              <div class="tier-avatar" style="background:${safeBg(unit.bg)}">${unitArt(unit, 'list')}</div>
+              <div class="tier-name">${safe(unit.name)}</div>
+            </div>
+          `).join('') : '<div style="color:var(--muted);padding:6px 4px">No units in this tier.</div>'}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  holder.querySelectorAll('[data-unit-id]').forEach(card => {
+    card.addEventListener('click', () => openModal(UNIT_MAP[card.dataset.unitId]));
+  });
+}
+
+function renderUnitCard(unit) {
+  const tier = tierValue(unit.tier);
+  const tierLabel = tier && tier !== 'none' ? tier.toUpperCase() : 'No tier';
+  const tierHigh = ['s', 'a'].includes(tier);
+  const isLatest = String(unit.id) === String(latestUnitId);
+  const rarity = rarityValue(unit.rarity);
+  return `
+    <article class="unit-card reveal rarity-${rarity} ${tierHigh ? 'tier-high' : ''} ${isLatest ? 'is-latest' : ''}" data-unit-id="${safe(unit.id)}" data-open-page="${isLatest ? 'true' : 'false'}">
+      <div class="unit-art" style="background:${safeBg(unit.bg)}">
+        <div class="unit-potherit">${unitArt(unit, 'list')}</div>
+      </div>
+      <div class="unit-body">
+        <div class="unit-top">
+          <div>
+            <div class="unit-badges">
+              <span class="rarity-badge rb-${rarity}">${rarityLabel(rarity)}</span>
+              ${renderUnitTags(unit)}
+            </div>
+            <div class="unit-name">${safe(unit.name)}</div>
+            <div class="unit-type">${safe(elementSummary(unit))}</div>
+          </div>
+          <span class="tier-chip">${tierLabel}</span>
+        </div>
+        <div class="unit-category-list">${renderElementTags(unit)}</div>
+        <div class="unit-stats">
+          <div class="unit-stat"><span>ATK</span><strong>${formatStatNumber(unit.atk)}</strong></div>
+          <div class="unit-stat"><span>ULT DMG</span><strong>${formatUltDamage(unit)}</strong></div>
+          <div class="unit-stat"><span>CD</span><strong>${unit.ult_cooldown ? `${safe(unit.ult_cooldown)}s` : 'N/D'}</strong></div>
+        </div>
+        <div class="unit-note">${safe(unit.description || 'No additional description.')}</div>
+        <div class="unit-actions">
+          <a class="unit-open-link" href="unit.php?id=${encodeURIComponent(unit.id)}" onclick="event.stopPropagation()">Abrir ficha</a>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function setViewMode(mode) {
+  viewMode = mode === 'compact' ? 'compact' : 'detailed';
+
+  document.querySelectorAll('.rarity-units .unit-grid').forEach(grid => {
+    grid.classList.toggle('compact-view', viewMode === 'compact');
+  });
+
+  document.querySelectorAll('[data-view-mode]').forEach(button => {
+    const active = button.dataset.viewMode === viewMode;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+}
+
+function attachUnitCardHandlers(root = document) {
+  root.querySelectorAll('.unit-card[data-unit-id]').forEach(card => {
+    card.addEventListener('click', () => {
+      const unit = UNIT_MAP[card.dataset.unitId];
+      if (!unit) return;
+      if (card.dataset.openPage === 'true') {
+        window.location.href = `unit.php?id=${encodeURIComponent(unit.id)}`;
+        return;
+      }
+      openModal(unit);
+    });
+  });
+}
+
+function applyFilters() {
+  const holder = document.getElementById('rarity-collections');
+  if (!holder) return;
+
+  holder.innerHTML = RARITY_GROUPS.map(([rarity, label]) => {
+    const units = ALL_UNITS.filter(unit => rarityValue(unit.rarity) === rarity);
+    const panelId = `rarity-units-${rarity}`;
+    return `
+      <article class="rarity-group" data-rarity-group="${rarity}">
+        <button class="rarity-collapsible" type="button" data-rarity-toggle="${rarity}" aria-expanded="false" aria-controls="${panelId}">
+          <span class="rarity-collapsible-title">${label}</span>
+          <span class="rarity-collapsible-count">${units.length} ${units.length === 1 ? 'unit' : 'units'}</span>
+          <span class="rarity-collapsible-icon" aria-hidden="true">⌄</span>
+        </button>
+        <div class="rarity-units" id="${panelId}" aria-hidden="true">
+          ${units.length
+            ? `<div class="unit-grid">${units.map(renderUnitCard).join('')}</div>`
+            : `<div class="rarity-empty">Ainda não existem units desta raridade.</div>`}
+        </div>
+      </article>
+    `;
+  }).join('');
+
+  document.getElementById('showing-count').textContent = `${ALL_UNITS.length} units`;
+  setViewMode(viewMode);
+  attachUnitCardHandlers(holder);
+
+  holder.querySelectorAll('[data-rarity-toggle]').forEach(button => {
+    button.addEventListener('click', () => {
+      const group = button.closest('.rarity-group');
+      const panel = document.getElementById(button.getAttribute('aria-controls'));
+      const isOpen = !group.classList.contains('is-open');
+      group.classList.toggle('is-open', isOpen);
+      button.setAttribute('aria-expanded', String(isOpen));
+      if (panel) panel.setAttribute('aria-hidden', String(!isOpen));
+    });
+  });
+}
+
+function openModal(unit) {
+  if (!unit) return;
+  const rarity = rarityValue(unit.rarity);
+  document.getElementById('modal-art').style.background = safeBg(unit.bg);
+  document.getElementById('modal-art').innerHTML = unitArt(unit, 'detail');
+  document.getElementById('modal-rarity').innerHTML = `<span class="rarity-badge rb-${rarity}">${rarityLabel(rarity)}</span>${renderUnitTags(unit)}${renderElementTags(unit)}`;
+  document.getElementById('modal-title').textContent = unit.name;
+  document.getElementById('modal-copy').textContent = unit.description || elementSummary(unit);
+  document.getElementById('modal-core').innerHTML = `
+    <div class="modal-mini"><span>ATK</span><strong>${formatStatNumber(unit.atk)}</strong></div>
+    <div class="modal-mini"><span>ULT DMG</span><strong>${formatUltDamage(unit)}</strong></div>
+    <div class="modal-mini"><span>ULT CD</span><strong>${unit.ult_cooldown ? `${safe(unit.ult_cooldown)}s` : 'N/D'}</strong></div>
+    <div class="modal-mini"><span>Mult.</span><strong>${safe(unit.ult_multiplier || 'N/D')}</strong></div>
+  `;
+  document.getElementById('modal-passive').textContent = unit.passive || 'Passive not registered.';
+  document.getElementById('modal-obtain').textContent = unit.obtain_method || 'Obtain method not registered.';
+  document.getElementById('modal-link').href = `unit.php?id=${encodeURIComponent(unit.id)}`;
+  document.getElementById('unit-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('unit-modal').classList.remove('open');
+}
+
+function renderRarityGrid(stats) {
+  const map = [
+    ['Secret', stats.secreto || 0, 'rb-secreto'],
+    ['Mythical', stats.myth || 0, 'rb-myth'],
+    ['Legendary', stats.legend || 0, 'rb-legend'],
+    ['Epic', stats.epic || 0, 'rb-epic'],
+    ['Rare', stats.rare || 0, 'rb-rare'],
+  ];
+
+  document.getElementById('rarity-grid').innerHTML = map.map(([label, count, badge]) => `
+    <div class="rarity-card">
+      <div class="rarity-card-head">
+        <strong><span class="rarity-badge ${badge}">${label}</span></strong>
+        <span>${count}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderRecent(recent) {
+  const holder = document.getElementById('recent-list');
+  holder.innerHTML = Array.isArray(recent) && recent.length
+    ? recent.map(unit => `
+      <a class="recent-unit" href="unit.php?id=${encodeURIComponent(unit.id)}">
+        <div class="recent-art" style="background:${safeBg(unit.bg)}">${unitArt(unit, 'list', false)}</div>
+        <div>
+          <span class="rarity-badge rb-${rarityValue(unit.rarity)}">${rarityLabel(unit.rarity)}</span>
+          <div class="recent-title">${safe(unit.name)}</div>
+          <div class="recent-copy">${safe(unit.description || unit.obtain_method || 'New unit recently added.')}</div>
+        </div>
+      </a>
+    `).join('')
+    : '<div class="empty-state">No recent additions.</div>';
+}
+
+function updateOverview(stats) {
+  const latestUnit = ALL_UNITS.length ? ALL_UNITS.slice().sort((a, b) => Number(b.id) - Number(a.id))[0] : null;
+  latestUnitId = latestUnit?.id || null;
+  const latest = latestUnit?.name || '-';
+  const latestRarity = rarityValue(latestUnit?.rarity);
+
+  document.getElementById('hero-latest-rarity').textContent = latestUnit ? rarityLabel(latestRarity) : 'Rare';
+  document.getElementById('hero-latest-rarity').className = `rarity-badge ${latestUnit ? `rb-${latestRarity}` : 'rb-rare'}`;
+  document.getElementById('hero-latest-art').style.background = safeBg(latestUnit?.bg);
+  document.getElementById('hero-latest-art').innerHTML = latestUnit
+    ? unitArt(latestUnit, 'list')
+    : '<div class="art-media"><span class="fallback">FS</span></div>';
+  document.getElementById('hero-latest-name').textContent = latest;
+  document.getElementById('hero-latest-copy').textContent = latestUnit
+    ? (latestUnit.description || elementSummary(latestUnit) || 'New unit recently added.')
+    : 'The latest character added will appear here with an image and quick summary.';
+
+  const latestCard = document.getElementById('hero-latest-card');
+  if (latestCard) {
+    latestCard.dataset.unitId = latestUnitId || '';
+    latestCard.onclick = () => {
+      if (latestUnitId) window.location.href = `unit.php?id=${encodeURIComponent(latestUnitId)}`;
+    };
+    latestCard.onkeydown = event => {
+      if ((event.key === 'Enter' || event.key === ' ') && latestUnitId) {
+        event.preventDefault();
+        window.location.href = `unit.php?id=${encodeURIComponent(latestUnitId)}`;
+      }
+    };
+  }
+
+  document.getElementById('overview-total').textContent = stats.total || ALL_UNITS.length || 0;
+  document.getElementById('overview-high').textContent = Number(stats.secreto || 0);
+  document.getElementById('overview-latest').textContent = latest;
+
+}
+
+async function loadUnits() {
+  try {
+    const [listRes, statsRes, recentRes] = await Promise.all([
+      fetch('api/units.php?action=list'),
+      fetch('api/units.php?action=stats'),
+      fetch('api/units.php?action=recent&limit=5')
+    ]);
+
+    if (!listRes.ok) throw new Error(`Units API returned HTTP ${listRes.status}`);
+    ALL_UNITS = await listRes.json();
+    if (!Array.isArray(ALL_UNITS)) throw new Error('Units API returned an invalid list');
+    ALL_UNITS.forEach(unit => { UNIT_MAP[unit.id] = unit; });
+    const stats = statsRes.ok ? await statsRes.json() : {};
+    const recent = recentRes.ok ? await recentRes.json() : [];
+
+    renderRarityGrid(stats || {});
+    renderRecent(Array.isArray(recent) ? recent : []);
+    updateOverview(stats || {});
+    applyFilters();
+  } catch (error) {
+    console.error('Could not load units from api/units.php:', error);
+    ALL_UNITS = [];
+    renderRarityGrid({});
+    renderRecent([]);
+    updateOverview({});
+    applyFilters();
+    document.getElementById('showing-count').textContent = 'Error loading units';
+  }
+}
+
+document.querySelectorAll('[data-view-mode]').forEach(button => {
+  button.addEventListener('click', () => setViewMode(button.dataset.viewMode));
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') closeModal();
+});
+
+
+loadUnits();
+</script>
+</body>
+</html>

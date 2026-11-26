@@ -1,0 +1,30 @@
+<?php
+return [
+    'label' => 'Units',
+    'title' => 'Gestão de Units',
+    'description' => 'Cria, atualiza e remove personagens e respetivos dados.',
+    'table' => 'units',
+    'columns' => [
+        ['name' => 'name', 'label' => 'Nome'],
+        ['name' => 'rarity', 'label' => 'Raridade'],
+        ['name' => 'tier', 'label' => 'Tier'],
+        ['name' => 'energymultiplier', 'label' => 'Energia'],
+        ['name' => 'damagemultiplier', 'label' => 'Dano'],
+    ],
+    'fields' => [
+        ['name' => 'name', 'label' => 'Nome', 'required' => true],
+        ['name' => 'emoji', 'label' => 'Emoji'],
+        ['name' => 'img', 'label' => 'Imagem'],
+        ['name' => 'rarity', 'label' => 'Raridade', 'default' => 'rare'],
+        ['name' => 'tier', 'label' => 'Tier', 'default' => 'c'],
+        ['name' => 'energymultiplier', 'label' => 'Multiplicador de energia', 'type' => 'number', 'default' => '0'],
+        ['name' => 'damagemultiplier', 'label' => 'Multiplicador de dano', 'type' => 'number', 'step' => '0.01', 'default' => '1.00'],
+        ['name' => 'avatarbase_multiplier', 'label' => 'Multiplicador base do avatar', 'type' => 'number', 'default' => '0'],
+        ['name' => 'description', 'label' => 'Descrição', 'type' => 'textarea', 'wide' => true],
+        ['name' => 'obtain_method', 'label' => 'Como obter', 'wide' => true],
+        ['name' => 'video_url', 'label' => 'URL do vídeo', 'wide' => true],
+        ['name' => 'skins_json', 'label' => 'Skins (JSON)', 'type' => 'textarea', 'wide' => true],
+        ['name' => 'is_meta', 'label' => 'Unit meta', 'type' => 'checkbox'],
+        ['name' => 'is_new', 'label' => 'Unit nova', 'type' => 'checkbox'],
+    ],
+];
